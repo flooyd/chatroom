@@ -17,7 +17,8 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
 				id: users.id, 
 				username: users.username, 
 				email: users.email,
-				isVerified: users.isVerified 
+				isVerified: users.isVerified,
+				profilePictureUrl: users.profilePictureUrl
 			})
 			.from(users)
 			.where(eq(users.id, userId))

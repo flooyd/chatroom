@@ -64,5 +64,40 @@ export const actions: Actions = {
 			console.error('Verification error:', error);
 			return fail(500, { error: 'An error occurred during verification' });
 		}
+	},
+
+	updateProfilePicture: async ({ request, cookies }) => {
+		const data = await request.formData();
+		const profilePictureUrl = data.get('profilePictureUrl');
+
+		if (!profilePictureUrl || typeof profilePictureUrl !== 'string') {
+			return fail(400, { error: 'Profile picture URL is required' });
+		}
+
+		// Basic URL validation
+		try {
+			new URL(profilePictureUrl);
+		} catch {
+			return fail(400, { error: 'Invalid URL format' });
+		}
+
+		const sessionId = cookies.get('session');
+		if (!sessionId) {
+			return fail(401, { error: 'Not authenticated' });
+		}
+
+		try {
+			const userId = parseInt(sessionId);
+			
+			await db
+				.update(users)
+				.set({ profilePictureUrl })
+				.where(eq(users.id, userId));
+
+			return { success: true, message: 'Profile picture updated successfully!' };
+		} catch (error) {
+			console.error('Profile picture update error:', error);
+			return fail(500, { error: 'An error occurred while updating profile picture' });
+		}
 	}
 };

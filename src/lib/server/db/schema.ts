@@ -7,4 +7,5 @@ export const users = pgTable('users', {
 	passwordHash: text('password_hash').notNull(),
 	verificationCode: text('verification_code'),
 	isVerified: boolean('is_verified').notNull().default(false),
+	profilePictureUrl: text('profile_picture_url'),
 });

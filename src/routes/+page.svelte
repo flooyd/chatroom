@@ -18,7 +18,18 @@
 		{#if data.users && data.users.length > 0}
 			<ul class="users-list">
 				{#each data.users as user}
-					<li>{user.username}</li>
+					<li>
+						<div class="user-item">
+							{#if user.profilePictureUrl}
+								<img src={user.profilePictureUrl} alt="{user.username}'s profile" class="user-avatar" />
+							{:else}
+								<div class="user-avatar-placeholder">
+									{user.username.charAt(0).toUpperCase()}
+								</div>
+							{/if}
+							<span class="username">{user.username}</span>
+						</div>
+					</li>
 				{/each}
 			</ul>
 		{:else}
@@ -83,5 +94,38 @@
 	.users-list li:hover {
 		background: rgba(100, 108, 255, 0.1);
 		border-radius: 4px;
+	}
+
+	.user-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.user-avatar {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid #646cff;
+	}
+
+	.user-avatar-placeholder {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #646cff, #535bf2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.2rem;
+		font-weight: bold;
+		color: white;
+		border: 2px solid #646cff;
+	}
+
+	.username {
+		font-size: 1rem;
+		font-weight: 500;
 	}
 </style>

@@ -13,7 +13,10 @@ export const load: PageServerLoad = async ({ parent }) => {
 	// Only load users list if current user is verified
 	if (user && user.isVerified) {
 		const allUsers = await db
-			.select({ username: users.username })
+			.select({ 
+				username: users.username,
+				profilePictureUrl: users.profilePictureUrl
+			})
 			.from(users)
             .orderBy(users.username);
 		
