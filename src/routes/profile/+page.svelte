@@ -1,0 +1,189 @@
+<script lang="ts">
+	import { enhance } from '$app/forms';
+
+	let { data, form } = $props();
+	let verificationCode = $state('');
+</script>
+
+<div class="profile-container">
+	<h1>Profile</h1>
+	
+	{#if data.user}
+		<div class="profile-info">
+			<div class="info-row">
+				<span class="label">Username:</span>
+				<span class="value">{data.user.username}</span>
+			</div>
+			<div class="info-row">
+				<span class="label">Email:</span>
+				<span class="value">{data.user.email}</span>
+			</div>
+			<div class="info-row">
+				<span class="label">Status:</span>
+				<span class="value">
+					{#if data.user.isVerified}
+						<span class="verified">✓ Verified</span>
+					{:else}
+						<span class="unverified">✗ Not Verified</span>
+					{/if}
+				</span>
+			</div>
+		</div>
+
+		{#if !data.user.isVerified}
+			<div class="verification-section">
+				<h2>Verify Your Email</h2>
+				<p>Please check your email for the verification code and enter it below.</p>
+				
+				<form method="POST" action="?/verify" use:enhance={() => {
+					return async ({ result, update }) => {
+						if (result.type === 'success') {
+							verificationCode = '';
+						}
+						await update();
+					};
+				}}>
+					<input 
+						type="text" 
+						name="code" 
+						bind:value={verificationCode}
+						placeholder="Enter 6-digit code" 
+						maxlength="6"
+						inputmode="numeric"
+						required 
+					/>
+					<button type="submit" class="verify-btn">Verify Email</button>
+				</form>
+
+				{#if form?.error}
+					<p class="error">{form.error}</p>
+				{/if}
+				{#if form?.success}
+					<p class="success">{form.message}</p>
+				{/if}
+			</div>
+		{/if}
+
+		<form method="POST" action="/?/logout" use:enhance>
+			<button type="submit" class="logout-btn">Logout</button>
+		</form>
+	{:else}
+		<p>Please log in to view your profile.</p>
+	{/if}
+</div>
+
+<style>
+	.profile-container {
+		max-width: 600px;
+		margin: 0 auto;
+		padding: 20px;
+	}
+
+	h1 {
+        margin-bottom: 20px;
+    }
+
+	.profile-info {
+		background: rgba(255, 255, 255, 0.05);
+		border: 2px solid #646cff;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 20px;
+	}
+
+	.info-row {
+		display: flex;
+		padding: 10px 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.info-row:last-child {
+		border-bottom: none;
+	}
+
+	.label {
+		font-weight: bold;
+		min-width: 120px;
+		color: #646cff;
+	}
+
+	.value {
+		flex: 1;
+	}
+
+	.logout-btn {
+		background-color: #ff3e00;
+		border-color: #ff3e00;
+	}
+
+	.logout-btn:hover {
+		background-color: #cc3200;
+		border-color: #cc3200;
+	}
+
+	.verified {
+		color: #00ff00;
+		font-weight: bold;
+	}
+
+	.unverified {
+		color: #ff9900;
+		font-weight: bold;
+	}
+
+	.verification-section {
+		background: rgba(255, 255, 255, 0.05);
+		border: 2px solid #ff9900;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 20px;
+	}
+
+	.verification-section h2 {
+		font-size: 1.5rem;
+		margin-bottom: 10px;
+	}
+
+	.verification-section p {
+		margin-bottom: 15px;
+	}
+
+	.verification-section form {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 10px;
+	}
+
+	.verification-section input {
+		flex: 1;
+		padding: 10px;
+		border: 2px solid #646cff;
+		border-radius: 8px;
+		background: rgba(0, 0, 0, 0.3);
+		color: white;
+		font-size: 1rem;
+		text-align: center;
+		letter-spacing: 0.3em;
+	}
+
+	.verify-btn {
+		background-color: #646cff;
+		border-color: #646cff;
+		white-space: nowrap;
+	}
+
+	.verify-btn:hover {
+		background-color: #535bf2;
+		border-color: #535bf2;
+	}
+
+	.error {
+		color: #ff3e00;
+		margin: 10px 0 0 0;
+	}
+
+	.success {
+		color: #00ff00;
+		margin: 10px 0 0 0;
+	}
+</style>
