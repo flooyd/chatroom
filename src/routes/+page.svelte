@@ -1,7 +1,13 @@
 <script lang="ts">
+	import { onlineUsers } from '$lib/stores/socket';
+	
 	const title = "The Chat Room";
 	
 	let { data } = $props();
+	
+	function isUserOnline(username: string): boolean {
+		return $onlineUsers.includes(username);
+	}
 </script>
 
 <h1>Welcome to {title}</h1>
@@ -28,6 +34,7 @@
 								</div>
 							{/if}
 							<span class="username">{user.username}</span>
+							<span class="status-indicator {isUserOnline(user.username) ? 'online' : 'offline'}"></span>
 						</div>
 					</li>
 				{/each}
@@ -127,5 +134,23 @@
 	.username {
 		font-size: 1rem;
 		font-weight: 500;
+		flex: 1;
+	}
+
+	.status-indicator {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		margin-left: auto;
+	}
+
+	.status-indicator.online {
+		background-color: #00ff00;
+		box-shadow: 0 0 4px #00ff00;
+	}
+
+	.status-indicator.offline {
+		background-color: #ff3e00;
+		box-shadow: 0 0 4px #ff3e00;
 	}
 </style>

@@ -15,7 +15,8 @@ export const load: PageServerLoad = async ({ parent }) => {
 		const allUsers = await db
 			.select({ 
 				username: users.username,
-				profilePictureUrl: users.profilePictureUrl
+				profilePictureUrl: users.profilePictureUrl,
+				lastOnlineTime: users.lastOnlineTime
 			})
 			.from(users)
             .orderBy(users.username);
@@ -72,7 +73,8 @@ export const actions: Actions = {
 					email,
 					passwordHash,
 					verificationCode: verificationCode,
-                    isVerified: false
+                    isVerified: false,
+					lastOnlineTime: new Date()
 				})
 				.returning();
 
@@ -140,6 +142,12 @@ export const actions: Actions = {
 			if (!validPassword) {
 				return fail(400, { error: 'Invalid username or password' });
 			}
+
+			// Update last online time
+			await db
+				.update(users)
+				.set({ lastOnlineTime: new Date() })
+				.where(eq(users.id, user.id));
 
 			// Set session cookie
 			cookies.set('session', user.id.toString(), {

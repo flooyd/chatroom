@@ -1,9 +1,47 @@
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { Server } from 'socket.io';
+
+const webSocketServer = {
+	name: 'webSocketServer',
+	configureServer(server: any) {
+		if (!server.httpServer) return;
+
+		const io = new Server(server.httpServer);
+		
+		// Track online users
+		const onlineUsers = new Map<string, string>(); // socketId -> username
+
+		io.on('connection', (socket) => {
+			console.log('Client connected:', socket.id);
+
+			socket.on('user-online', (username: string) => {
+				console.log('User online:', username);
+				onlineUsers.set(socket.id, username);
+				
+				// Broadcast updated online users list to all clients
+				const onlineUsersList = Array.from(new Set(onlineUsers.values()));
+				io.emit('online-users', onlineUsersList);
+			});
+
+			socket.on('disconnect', () => {
+				const username = onlineUsers.get(socket.id);
+				if (username) {
+					console.log('User offline:', username);
+					onlineUsers.delete(socket.id);
+					
+					// Broadcast updated online users list to all clients
+					const onlineUsersList = Array.from(new Set(onlineUsers.values()));
+					io.emit('online-users', onlineUsersList);
+				}
+			});
+		});
+	}
+};
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [sveltekit(), webSocketServer],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

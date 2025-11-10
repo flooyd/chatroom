@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { enhance } from '$app/forms';
+	import { initializeSocket, disconnectSocket } from '$lib/stores/socket';
 
 	let { children, data } = $props();
 
@@ -15,6 +16,13 @@
 	$effect(() => {
 		loggedIn = !!data.user;
 		username = data.user?.username || "";
+		
+		// Initialize or disconnect socket based on login status
+		if (loggedIn && username) {
+			initializeSocket(username);
+		} else {
+			disconnectSocket();
+		}
 	});
 
 	const openLoginModal = () => {
