@@ -168,6 +168,7 @@
 
 	.chat-container {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 20px;
 		margin-top: 20px;
 		max-width: 1200px;
@@ -179,12 +180,31 @@
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
+		min-width: 300px;
 	}
 
 	.messages-section h2 {
 		font-size: 1.5rem;
 		margin-bottom: 15px;
 		color: #646cff;
+	}
+
+	@media (max-width: 768px) {
+		.chat-container {
+			flex-direction: column;
+			height: auto;
+		}
+
+		.users-section {
+			flex: 1;
+			width: 100%;
+		}
+
+		.messages-section {
+			flex: 1;
+			width: 100%;
+			height: 500px;
+		}
 	}
 
 	.messages-container {
