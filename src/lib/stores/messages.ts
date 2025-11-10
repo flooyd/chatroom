@@ -26,8 +26,12 @@ export function initializeMessages(username: string | null, isVerified: boolean 
 	// Only initialize if user is logged in and verified
 	if (!username || !isVerified) {
 		messages.set([]);
+		lastMessageTimestamp = 0;
 		return;
 	}
+
+	// Reset lastMessageTimestamp to fetch all messages on init
+	lastMessageTimestamp = 0;
 
 	// Try Socket.IO first (for local development)
 	socket = io();
