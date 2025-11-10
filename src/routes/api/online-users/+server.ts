@@ -6,15 +6,15 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {
 	try {
-		// Consider users online if they've been active in the last 30 seconds
-		const thirtySecondsAgo = new Date(Date.now() - 30000);
+		// Consider users online if they've been active in the last 5 seconds
+		const fiveSecondsAgo = new Date(Date.now() - 5000);
 		
 		const onlineUsers = await db
 			.select({ 
 				username: users.username 
 			})
 			.from(users)
-			.where(sql`${users.lastOnlineTime} > ${thirtySecondsAgo}`);
+			.where(sql`${users.lastOnlineTime} > ${fiveSecondsAgo}`);
 
 		return json({ 
 			onlineUsers: onlineUsers.map(u => u.username) 
