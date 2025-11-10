@@ -26,6 +26,14 @@ export function initializeSocket(username: string | null) {
 		return;
 	}
 
+	// Immediately add current user to online list for instant UX feedback
+	onlineUsers.update(users => {
+		if (!users.includes(username)) {
+			return [...users, username];
+		}
+		return users;
+	});
+
 	// Try Socket.IO first (for local development)
 	socket = io();
 
@@ -76,7 +84,7 @@ export function initializeSocket(username: string | null) {
 				} catch (error) {
 					console.error('Poll failed:', error);
 				}
-			}, 1000);
+			}, 5000);
 
 			// Send initial heartbeat and fetch immediately
 			fetch('/api/heartbeat', { method: 'POST' }).catch(console.error);
