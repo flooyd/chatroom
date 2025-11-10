@@ -49,7 +49,7 @@ export function initializeMessages(username: string | null, isVerified: boolean 
 		socketConnected = false;
 	});
 
-	// Fetch initial messages
+	// Fetch initial messages immediately
 	fetchMessages();
 
 	// Fallback to polling for production (Vercel)
@@ -74,10 +74,12 @@ async function fetchMessages() {
 		const response = await fetch(url);
 		const data = await response.json();
 		
-		if (data.messages && data.messages.length > 0) {
-			// Update last timestamp
-			const timestamps = data.messages.map((m: Message) => m.timestamp);
-			lastMessageTimestamp = Math.max(...timestamps);
+		if (data.messages) {
+			if (data.messages.length > 0) {
+				// Update last timestamp
+				const timestamps = data.messages.map((m: Message) => m.timestamp);
+				lastMessageTimestamp = Math.max(...timestamps);
+			}
 			
 			// Add new messages to the store
 			messages.update(currentMessages => {
