@@ -8,7 +8,7 @@ let socket: Socket | null = null;
 let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
 let pollInterval: ReturnType<typeof setInterval> | null = null;
 
-export function initializeSocket(username: string | null) {
+export function initializeSocket(username: string | null, isVerified: boolean = false) {
 	if (!browser) return;
 
 	// Disconnect existing socket if any
@@ -20,8 +20,8 @@ export function initializeSocket(username: string | null) {
 	if (heartbeatInterval) clearInterval(heartbeatInterval);
 	if (pollInterval) clearInterval(pollInterval);
 
-	// Only initialize if user is logged in
-	if (!username) {
+	// Only initialize if user is logged in and verified
+	if (!username || !isVerified) {
 		onlineUsers.set([]);
 		return;
 	}

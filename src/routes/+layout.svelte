@@ -17,9 +17,9 @@
 		loggedIn = !!data.user;
 		username = data.user?.username || "";
 		
-		// Initialize or disconnect socket based on login status
-		if (loggedIn && username) {
-			initializeSocket(username);
+		// Initialize or disconnect socket based on login status and verification
+		if (loggedIn && username && data.user?.isVerified) {
+			initializeSocket(username, data.user.isVerified);
 		} else {
 			disconnectSocket();
 		}
