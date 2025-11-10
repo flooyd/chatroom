@@ -41,25 +41,27 @@
 			</div>
 		</div>
 
-		<div class="profile-picture-section">
-			<h2>Profile Picture</h2>
-			<form method="POST" action="?/updateProfilePicture" use:enhance>
-				<input 
-					type="url" 
-					name="profilePictureUrl" 
-					bind:value={profilePictureUrl}
-					placeholder="Enter image URL (e.g., https://example.com/image.jpg)" 
-					required 
-				/>
-				<button type="submit" class="update-btn">Update Picture</button>
-			</form>
-			{#if form?.error && form.error !== 'Verification code is required' && form.error !== 'Invalid verification code' && form.error !== 'Email already verified'}
-				<p class="error">{form.error}</p>
-			{/if}
-			{#if form?.success && form.message === 'Profile picture updated successfully!'}
-				<p class="success">{form.message}</p>
-			{/if}
-		</div>
+		{#if data.user.isVerified}
+			<div class="profile-picture-section">
+				<h2>Profile Picture</h2>
+				<form method="POST" action="?/updateProfilePicture" use:enhance>
+					<input 
+						type="url" 
+						name="profilePictureUrl" 
+						bind:value={profilePictureUrl}
+						placeholder="Enter image URL (e.g., https://example.com/image.jpg)" 
+						required 
+					/>
+					<button type="submit" class="update-btn">Update Picture</button>
+				</form>
+				{#if form?.error && form.error !== 'Verification code is required' && form.error !== 'Invalid verification code' && form.error !== 'Email already verified'}
+					<p class="error">{form.error}</p>
+				{/if}
+				{#if form?.success && form.message === 'Profile picture updated successfully!'}
+					<p class="success">{form.message}</p>
+				{/if}
+			</div>
+		{/if}
 
 		{#if !data.user.isVerified}
 			<div class="verification-section">
@@ -205,6 +207,7 @@
 
 	.profile-picture-section form {
 		display: flex;
+        flex-wrap: wrap;
 		gap: 10px;
 		margin-bottom: 10px;
 	}
@@ -249,6 +252,7 @@
 
 	.verification-section form {
 		display: flex;
+        flex-wrap: wrap;
 		gap: 10px;
 		margin-bottom: 10px;
 	}
