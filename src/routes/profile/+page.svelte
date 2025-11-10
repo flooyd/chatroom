@@ -170,6 +170,8 @@
 
 	.value {
 		flex: 1;
+		word-break: break-all;
+		overflow-wrap: break-word;
 	}
 
 	.logout-btn {
