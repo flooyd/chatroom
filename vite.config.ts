@@ -25,6 +25,12 @@ const webSocketServer = {
 				io.emit('online-users', onlineUsersList);
 			});
 
+			socket.on('send-message', (message: any) => {
+				console.log('Message received:', message);
+				// Broadcast message to all clients
+				io.emit('new-message', message);
+			});
+
 			socket.on('disconnect', () => {
 				const username = onlineUsers.get(socket.id);
 				if (username) {

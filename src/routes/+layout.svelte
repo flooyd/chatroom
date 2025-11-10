@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { enhance } from '$app/forms';
 	import { initializeSocket, disconnectSocket } from '$lib/stores/socket';
+	import { initializeMessages, disconnectMessages } from '$lib/stores/messages';
 
 	let { children, data } = $props();
 
@@ -17,11 +18,13 @@
 		loggedIn = !!data.user;
 		username = data.user?.username || "";
 		
-		// Initialize or disconnect socket based on login status and verification
+		// Initialize or disconnect socket and messages based on login status and verification
 		if (loggedIn && username && data.user?.isVerified) {
 			initializeSocket(username, data.user.isVerified);
+			initializeMessages(username, data.user.isVerified);
 		} else {
 			disconnectSocket();
+			disconnectMessages();
 		}
 	});
 
