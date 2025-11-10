@@ -6,7 +6,16 @@ interface Message {
 	timestamp: number;
 }
 
-const messages: Message[] = [];
+// Use global to persist across serverless function warm starts
+const globalForMessages = global as unknown as {
+	messages: Message[] | undefined;
+};
+
+if (!globalForMessages.messages) {
+	globalForMessages.messages = [];
+}
+
+const messages = globalForMessages.messages;
 const MAX_MESSAGES = 50; // Keep only last 50 messages
 
 export function addMessage(username: string, text: string): Message {
