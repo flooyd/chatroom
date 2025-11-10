@@ -76,7 +76,7 @@ export function initializeSocket(username: string | null) {
 				} catch (error) {
 					console.error('Poll failed:', error);
 				}
-			}, 5000);
+			}, 1000);
 
 			// Send initial heartbeat and fetch immediately
 			fetch('/api/heartbeat', { method: 'POST' }).catch(console.error);
