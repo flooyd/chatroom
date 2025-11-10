@@ -108,11 +108,22 @@
 				{:else}
 					{#each $messages as message (message.id)}
 						<div class="message" class:own-message={message.username === data.user.username}>
-							<div class="message-header">
-								<span class="message-username">{message.username}</span>
-								<span class="message-time">{formatMessageTime(message.timestamp)}</span>
+							<div class="message-content">
+								{#if message.profilePictureUrl}
+									<img src={message.profilePictureUrl} alt="{message.username}'s profile" class="message-avatar" />
+								{:else}
+									<div class="message-avatar-placeholder">
+										{message.username.charAt(0).toUpperCase()}
+									</div>
+								{/if}
+								<div class="message-body">
+									<div class="message-header">
+										<span class="message-username">{message.username}</span>
+										<span class="message-time">{formatMessageTime(message.timestamp)}</span>
+									</div>
+									<div class="message-text">{message.text}</div>
+								</div>
 							</div>
-							<div class="message-text">{message.text}</div>
 						</div>
 					{/each}
 				{/if}
@@ -239,6 +250,41 @@
 		align-self: flex-end;
 		background: rgba(0, 255, 0, 0.1);
 		border-color: rgba(0, 255, 0, 0.3);
+	}
+
+	.message-content {
+		display: flex;
+		gap: 10px;
+		align-items: flex-start;
+	}
+
+	.message-avatar {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid #646cff;
+		flex-shrink: 0;
+	}
+
+	.message-avatar-placeholder {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #646cff, #535bf2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.9rem;
+		font-weight: bold;
+		color: white;
+		border: 2px solid #646cff;
+		flex-shrink: 0;
+	}
+
+	.message-body {
+		flex: 1;
+		min-width: 0;
 	}
 
 	.message-header {

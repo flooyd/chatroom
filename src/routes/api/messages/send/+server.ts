@@ -1,5 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { addMessage } from '$lib/server/messageStore';
+import { db } from '$lib/server/db';
+import { users } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
@@ -24,7 +27,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			return json({ error: 'Message too long (max 500 characters)' }, { status: 400 });
 		}
 
-		const message = addMessage(username, text);
+		// Get user's profile picture
+		const [user] = await db
+			.select({ profilePictureUrl: users.profilePictureUrl })
+			.from(users)
+			.where(eq(users.username, username))
+			.limit(1);
+
+		const message = addMessage(username, text, user?.profilePictureUrl);
 		
 		return json({ success: true, message });
 	} catch (error) {

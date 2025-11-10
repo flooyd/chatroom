@@ -4,6 +4,7 @@ interface Message {
 	username: string;
 	text: string;
 	timestamp: number;
+	profilePictureUrl?: string | null;
 }
 
 // Use global to persist across serverless function warm starts
@@ -18,12 +19,13 @@ if (!globalForMessages.messages) {
 const messages = globalForMessages.messages;
 const MAX_MESSAGES = 50; // Keep only last 50 messages
 
-export function addMessage(username: string, text: string): Message {
+export function addMessage(username: string, text: string, profilePictureUrl?: string | null): Message {
 	const message: Message = {
 		id: `${Date.now()}-${Math.random()}`,
 		username,
 		text,
-		timestamp: Date.now()
+		timestamp: Date.now(),
+		profilePictureUrl
 	};
 	
 	messages.push(message);
