@@ -98,8 +98,8 @@
 
 <style>
 	nav {
-		position: sticky;
-		top: 0;
+		position: fixed;
+		top: 0px;
 		background-color: black;
 		z-index: 100;
 		display: flex;
@@ -107,7 +107,7 @@
 		justify-content: space-between;
 		border-bottom: 3px solid #eaeaea;
 		padding-bottom: 16px;
-		margin-bottom: 20px;
+		width: calc(100% - 60px);
 	}
 
 	nav a {

@@ -169,15 +169,13 @@
 		flex-direction: column;
 		position: sticky;
 		top: 80px;
-		align-self: flex-start;
 		max-height: calc(100vh - 100px);
 		overflow-y: auto;
 		background: black;
 	}
 
 	.users-section h2 {
-		font-size: 1.5rem;
-		margin-bottom: 15px;
+		margin-bottom: 20px;
 		color: #646cff;
 	}
 
@@ -199,8 +197,7 @@
 	}
 
 	.messages-section h2 {
-		font-size: 1.5rem;
-		margin-bottom: 15px;
+		margin-bottom: 20px;
 		color: #646cff;
 	}
 
@@ -233,7 +230,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		max-height: calc(100vh - 232px);
 	}
 
 	.no-messages {
