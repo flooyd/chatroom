@@ -106,8 +106,8 @@
 		align-items: center;
 		justify-content: space-between;
 		border-bottom: 3px solid #eaeaea;
-		padding-bottom: 16px;
-		width: calc(100% - 60px);
+		padding: 16px 0px;
+		width: calc(100% - 40px);
 	}
 
 	nav a {

@@ -164,14 +164,15 @@
 	}
 
 	.users-section {
-		flex: 0 0 250px;
 		display: flex;
 		flex-direction: column;
 		position: sticky;
-		top: 80px;
+		top: 60px;
+		padding-top: 20px;
 		max-height: calc(100vh - 100px);
 		overflow-y: auto;
 		background: black;
+		margin-bottom: 40px;
 	}
 
 	.users-section h2 {
@@ -350,7 +351,6 @@
 
 	.users-list {
 		background: rgba(255, 255, 255, 0.05);
-		z-index: 100;
 		border: 2px solid #646cff;
 		border-radius: 8px;
 		padding: 20px;
