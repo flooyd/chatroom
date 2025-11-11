@@ -63,14 +63,14 @@ export function initializeSocket(username: string | null, isVerified: boolean = 
 		if (!socketConnected) {
 			console.log('Socket.IO not available, using polling fallback');
 			
-			// Send heartbeat every 4 seconds
+			// Send heartbeat every 3 seconds
 			heartbeatInterval = setInterval(async () => {
 				try {
 					await fetch('/api/heartbeat', { method: 'POST' });
 				} catch (error) {
 					console.error('Heartbeat failed:', error);
 				}
-			}, 4000);
+			}, 3000);
 
 			// Poll for online users every 5 seconds
 			pollInterval = setInterval(async () => {

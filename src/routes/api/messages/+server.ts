@@ -7,7 +7,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const since = url.searchParams.get('since');
 		const sinceTimestamp = since ? parseInt(since) : undefined;
 		
-		const messages = getMessages(sinceTimestamp);
+		const messages = await getMessages(sinceTimestamp);
 		
 		return json({ messages });
 	} catch (error) {

@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			.where(eq(users.username, username))
 			.limit(1);
 
-		const message = addMessage(username, text, user?.profilePictureUrl);
+		const message = await addMessage(username, text, user?.profilePictureUrl);
 		
 		return json({ success: true, message });
 	} catch (error) {

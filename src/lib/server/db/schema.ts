@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, timestamp, bigint } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
 	id: serial('id').primaryKey(),
@@ -9,4 +9,12 @@ export const users = pgTable('users', {
 	isVerified: boolean('is_verified').notNull().default(false),
 	profilePictureUrl: text('profile_picture_url'),
 	lastOnlineTime: timestamp('last_online_time'),
+});
+
+export const messages = pgTable('messages', {
+	id: serial('id').primaryKey(),
+	username: text('username').notNull(),
+	text: text('text').notNull(),
+	timestamp: bigint('timestamp', { mode: 'number' }).notNull(),
+	profilePictureUrl: text('profile_picture_url'),
 });

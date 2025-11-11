@@ -3,7 +3,7 @@ import { browser } from '$app/environment';
 import { io, type Socket } from 'socket.io-client';
 
 export interface Message {
-	id: string;
+	id: number;
 	username: string;
 	text: string;
 	timestamp: number;

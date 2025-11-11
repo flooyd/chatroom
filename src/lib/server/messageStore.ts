@@ -1,50 +1,70 @@
-// In-memory message store (non-persistent)
+// Database-backed message store
+import { db } from '$lib/server/db';
+import { messages } from '$lib/server/db/schema';
+import { desc, gt, sql } from 'drizzle-orm';
+
 interface Message {
-	id: string;
+	id: number;
 	username: string;
 	text: string;
 	timestamp: number;
 	profilePictureUrl?: string | null;
 }
 
-// Use global to persist across serverless function warm starts
-const globalForMessages = global as unknown as {
-	messages: Message[] | undefined;
-};
-
-if (!globalForMessages.messages) {
-	globalForMessages.messages = [];
-}
-
-const messages = globalForMessages.messages;
 const MAX_MESSAGES = 50; // Keep only last 50 messages
 
-export function addMessage(username: string, text: string, profilePictureUrl?: string | null): Message {
-	const message: Message = {
-		id: `${Date.now()}-${Math.random()}`,
-		username,
-		text,
-		timestamp: Date.now(),
-		profilePictureUrl
+export async function addMessage(username: string, text: string, profilePictureUrl?: string | null): Promise<Message> {
+	// Insert the new message
+	const [message] = await db
+		.insert(messages)
+		.values({
+			username,
+			text,
+			timestamp: Date.now(),
+			profilePictureUrl
+		})
+		.returning();
+
+	// Clean up old messages (keep only last MAX_MESSAGES)
+	await cleanupOldMessages();
+
+	return {
+		id: message.id,
+		username: message.username,
+		text: message.text,
+		timestamp: message.timestamp,
+		profilePictureUrl: message.profilePictureUrl
 	};
-	
-	messages.push(message);
-	
-	// Keep only the last MAX_MESSAGES
-	if (messages.length > MAX_MESSAGES) {
-		messages.shift();
-	}
-	
-	return message;
 }
 
-export function getMessages(since?: number): Message[] {
+export async function getMessages(since?: number): Promise<Message[]> {
 	if (since) {
-		return messages.filter(m => m.timestamp > since);
+		const result = await db
+			.select()
+			.from(messages)
+			.where(gt(messages.timestamp, since))
+			.orderBy(messages.timestamp);
+		return result;
 	}
-	return [...messages];
+
+	const result = await db
+		.select()
+		.from(messages)
+		.orderBy(desc(messages.timestamp))
+		.limit(MAX_MESSAGES);
+	
+	// Return in chronological order (oldest first)
+	return result.reverse();
 }
 
-export function getMessageStore() {
-	return messages;
+async function cleanupOldMessages(): Promise<void> {
+	// Delete messages beyond the MAX_MESSAGES limit
+	await db.execute(sql`
+		DELETE FROM ${messages}
+		WHERE id NOT IN (
+			SELECT id FROM ${messages}
+			ORDER BY timestamp DESC
+			LIMIT ${MAX_MESSAGES}
+		)
+	`);
 }
