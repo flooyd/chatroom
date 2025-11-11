@@ -172,6 +172,7 @@
 		align-self: flex-start;
 		max-height: calc(100vh - 100px);
 		overflow-y: auto;
+		background: black;
 	}
 
 	.users-section h2 {
@@ -353,6 +354,7 @@
 
 	.users-list {
 		background: rgba(255, 255, 255, 0.05);
+		z-index: 100;
 		border: 2px solid #646cff;
 		border-radius: 8px;
 		padding: 20px;
