@@ -6,7 +6,7 @@
 	
 	let { data } = $props();
 	let messageText = $state('');
-	let messagesContainer: HTMLDivElement;
+	let messagesContainer = $state<HTMLDivElement>();
 	
 	function isUserOnline(username: string): boolean {
 		return $onlineUsers.includes(username);
@@ -57,8 +57,6 @@
 		}
 	});
 </script>
-
-<h1>Welcome to {title}</h1>
 
 {#if data.user && !data.user.isVerified}
 	<div class="verification-notice">
@@ -169,6 +167,11 @@
 		flex: 0 0 250px;
 		display: flex;
 		flex-direction: column;
+		position: sticky;
+		top: 80px;
+		align-self: flex-start;
+		max-height: calc(100vh - 100px);
+		overflow-y: auto;
 	}
 
 	.users-section h2 {
@@ -229,6 +232,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+		max-height: calc(100vh - 225px);
 	}
 
 	.no-messages {
@@ -318,6 +322,7 @@
 	.message-input {
 		display: flex;
 		gap: 10px;
+		margin-bottom: 20px;
 	}
 
 	.message-input input {
