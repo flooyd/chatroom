@@ -120,10 +120,6 @@
 		text-decoration: underline;
 	}
 
-	nav .title {
-		font-size: 1.5em;
-	}
-
 	.section-right a,
 	.section-right button {
 		margin-left: 16px;
