@@ -232,7 +232,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		max-height: calc(100vh - 225px);
+		max-height: calc(100vh - 232px);
 	}
 
 	.no-messages {
