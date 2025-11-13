@@ -304,4 +304,26 @@
 		transform: none;
 		background: none;
 	}
+
+	@media (max-width: 600px) {
+		nav {
+			padding: 12px 20px;
+		}
+
+		nav .title {
+			font-size: 1.1rem;
+		}
+
+		.section-right a {
+			font-size: 0.85rem;
+			padding: 6px 12px;
+		}
+
+		.modal {
+			min-width: auto;
+			width: calc(100% - 40px);
+			max-width: 400px;
+			padding: 24px;
+		}
+	}
 </style>

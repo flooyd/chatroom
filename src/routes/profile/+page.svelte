@@ -274,8 +274,9 @@
 	}
 
 	.profile-picture-section input {
-		flex: 1;
+		flex: 1 1 auto;
 		min-width: 200px;
+		max-width: 100%;
 		padding: 14px 18px;
 		border: 2px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
@@ -411,6 +412,11 @@
 		.profile-picture-section form,
 		.verification-section form {
 			flex-direction: column;
+		}
+
+		.profile-picture-section input,
+		.verification-section input {
+			max-width: 100%;
 		}
 
 		.update-btn,
