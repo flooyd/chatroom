@@ -8,7 +8,7 @@
 		<div class="feature-card">
 			<div class="card-icon">💬</div>
 			<h2>Real-time Messaging</h2>
-			<p>Experience instant communication with Socket.IO</p>
+			<p>Experience instant communication with Socket.IO.</p>
 		</div>
 
 		<div class="feature-card">
