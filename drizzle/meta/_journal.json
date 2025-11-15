@@ -15,6 +15,13 @@
       "when": 1762722337811,
       "tag": "0001_material_stardust",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763249861332,
+      "tag": "0002_curious_glorian",
+      "breakpoints": true
     }
   ]
 }
