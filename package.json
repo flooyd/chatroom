@@ -54,6 +54,7 @@
 		"@anthropic-ai/sdk": "^0.69.0",
 		"@neondatabase/serverless": "^1.0.2",
 		"bcrypt": "^6.0.0",
+		"express": "^5.1.0",
 		"postgres": "^3.4.7",
 		"resend": "^6.4.2",
 		"socket.io": "^4.8.1",

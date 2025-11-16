@@ -3,6 +3,7 @@ import { addMessage } from '$lib/server/messageStore';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { broadcastMessage } from '$lib/server/socket.js';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
@@ -35,6 +36,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			.limit(1);
 
 		const message = await addMessage(username, text, user?.profilePictureUrl);
+		
+		// Broadcast to all OTHER clients via Socket.IO
+		broadcastMessage(message);
 		
 		return json({ success: true, message });
 	} catch (error) {
