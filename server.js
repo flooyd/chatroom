@@ -1,10 +1,10 @@
 import { Server } from 'socket.io';
-import { createServer } from 'http';
 
-// Import the built SvelteKit app
-const { server: svelteApp } = await import('./build/index.js');
+// Import the polka server from adapter-node
+const polkaApp = await import('./build/index.js');
 
-const httpServer = createServer(svelteApp);
+// Get the actual HTTP server from the polka instance
+const httpServer = polkaApp.server.server;
 
 // Initialize Socket.IO with CORS
 const io = new Server(httpServer, {
@@ -43,8 +43,5 @@ io.on('connection', (socket) => {
 // Make io globally available for the API routes
 global.io = io;
 
-const port = process.env.PORT || 3000;
-httpServer.listen(port, () => {
-	console.log(`Server listening on port ${port}`);
-	console.log('Socket.IO initialized and ready');
-});
+console.log('Socket.IO initialized and attached to SvelteKit server');
+console.log('Server will start on port:', polkaApp.port || process.env.PORT || 3000);
