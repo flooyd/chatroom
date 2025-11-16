@@ -6,18 +6,18 @@
 
 	let { children, data } = $props();
 
-	const title = "The Chat Room";
+	const title = 'The Chat Room';
 	let loggedIn = $state(!!data.user);
-	let username = $state(data.user?.username || "");
+	let username = $state(data.user?.username || '');
 	let showLoginModal = $state(false);
-	let loginOrRegister = $state("Login");
-	let errorMessage = $state("");
+	let loginOrRegister = $state('Login');
+	let errorMessage = $state('');
 
 	// Sync state with data prop changes (e.g., after logout)
 	$effect(() => {
 		loggedIn = !!data.user;
-		username = data.user?.username || "";
-		
+		username = data.user?.username || '';
+
 		// Initialize or disconnect socket and messages based on login status and verification
 		if (loggedIn && username && data.user?.isVerified) {
 			initializeSocket(username, data.user.isVerified);
@@ -39,16 +39,16 @@
 		// Redirect to home page to show login modal
 		window.location.href = '/#login';
 		showLoginModal = true;
-		loginOrRegister = "Login";
-		errorMessage = "";
-	}
+		loginOrRegister = 'Login';
+		errorMessage = '';
+	};
 
 	const handleLoginSubmit = () => {
 		return async ({ result, update }: any) => {
 			if (result.type === 'success') {
 				loggedIn = true;
 				showLoginModal = false;
-				errorMessage = "";
+				errorMessage = '';
 				if (result.data?.username) {
 					username = result.data.username;
 				}
@@ -57,19 +57,18 @@
 			}
 			await update();
 		};
-	}
-
+	};
 </script>
 
 <nav>
-	<a class="title" href="/" onclick={() => showLoginModal = false}>
+	<a class="title" href="/" onclick={() => (showLoginModal = false)}>
 		<img src="/chatroomhouse.png" alt="Chatroom" class="nav-logo" />
 		{title}
 	</a>
 	<div class="section-right">
-		<a href="/about" onclick={() => showLoginModal = false}>About</a>
+		<a href="/about" onclick={() => (showLoginModal = false)}>About</a>
 		{#if loggedIn}
-			<a href="/profile" onclick={() => showLoginModal = false}>{username}</a>
+			<a href="/profile" onclick={() => (showLoginModal = false)}>{username}</a>
 		{:else}
 			<button onclick={openLoginModal}>Login</button>
 		{/if}
@@ -85,11 +84,29 @@
 			<button onclick={() => (showLoginModal = false)}>X</button>
 		</div>
 		<a href="/auth/google" class="google-btn">
-			<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z" fill="#4285F4"/>
-				<path d="M10 20c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H1.064v2.59A9.996 9.996 0 0010 20z" fill="#34A853"/>
-				<path d="M4.405 11.9c-.2-.6-.314-1.24-.314-1.9 0-.66.114-1.3.314-1.9V5.51H1.064A9.996 9.996 0 000 10c0 1.614.386 3.14 1.064 4.49L4.405 11.9z" fill="#FBBC05"/>
-				<path d="M10 3.977c1.468 0 2.786.505 3.823 1.496l2.868-2.868C14.959.99 12.695 0 10 0 6.09 0 2.71 2.24 1.064 5.51l3.34 2.59C5.19 5.736 7.395 3.977 10 3.977z" fill="#EA4335"/>
+			<svg
+				width="20"
+				height="20"
+				viewBox="0 0 20 20"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z"
+					fill="#4285F4"
+				/>
+				<path
+					d="M10 20c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H1.064v2.59A9.996 9.996 0 0010 20z"
+					fill="#34A853"
+				/>
+				<path
+					d="M4.405 11.9c-.2-.6-.314-1.24-.314-1.9 0-.66.114-1.3.314-1.9V5.51H1.064A9.996 9.996 0 000 10c0 1.614.386 3.14 1.064 4.49L4.405 11.9z"
+					fill="#FBBC05"
+				/>
+				<path
+					d="M10 3.977c1.468 0 2.786.505 3.823 1.496l2.868-2.868C14.959.99 12.695 0 10 0 6.09 0 2.71 2.24 1.064 5.51l3.34 2.59C5.19 5.736 7.395 3.977 10 3.977z"
+					fill="#EA4335"
+				/>
 			</svg>
 			Continue with Google
 		</a>
@@ -101,7 +118,7 @@
 		<form method="POST" action="?/{loginOrRegister.toLowerCase()}" use:enhance={handleLoginSubmit}>
 			<label for="username">Username:</label>
 			<input type="text" id="username" name="username" required />
-			{#if loginOrRegister === "Register"}
+			{#if loginOrRegister === 'Register'}
 				<label for="email">Email:</label>
 				<input type="email" id="email" name="email" required />
 			{/if}
@@ -113,10 +130,26 @@
 			<button type="submit">{loginOrRegister}</button>
 		</form>
 		<div class="modal-footer">
-			{#if loginOrRegister === "Login"}
-				<p>Don't have an account? <button type="button" onclick={() => { loginOrRegister = "Register"; errorMessage = ""; }}>Register here.</button></p>
+			{#if loginOrRegister === 'Login'}
+				<p>
+					Don't have an account? <button
+						type="button"
+						onclick={() => {
+							loginOrRegister = 'Register';
+							errorMessage = '';
+						}}>Register here.</button
+					>
+				</p>
 			{:else}
-				<p>Already have an account? <button type="button" onclick={() => { loginOrRegister = "Login"; errorMessage = ""; }}>Login here.</button></p>
+				<p>
+					Already have an account? <button
+						type="button"
+						onclick={() => {
+							loginOrRegister = 'Login';
+							errorMessage = '';
+						}}>Login here.</button
+					>
+				</p>
 			{/if}
 		</div>
 	</div>
@@ -207,7 +240,7 @@
 
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
-		padding-top: 65px;
+		padding-top: 120px;
 	}
 
 	.modal {
@@ -220,7 +253,9 @@
 		backdrop-filter: blur(30px);
 		border: 1px solid rgba(0, 212, 255, 0.4);
 		border-radius: 24px;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 100px rgba(0, 212, 255, 0.1);
+		box-shadow:
+			0 20px 60px rgba(0, 0, 0, 0.7),
+			0 0 100px rgba(0, 212, 255, 0.1);
 		min-width: 420px;
 		animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		z-index: 2000;
@@ -244,9 +279,13 @@
 		border-radius: 24px;
 		padding: 1px;
 		background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 255, 136, 0.2));
-		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;
-		mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
 		mask-composite: exclude;
 		pointer-events: none;
 	}
@@ -386,6 +425,11 @@
 	}
 
 	@media (max-width: 600px) {
+		:global(body) {
+			padding-top: 80px;
+			padding-bottom: 20px;
+		}
+
 		nav {
 			padding: 12px 20px;
 		}
