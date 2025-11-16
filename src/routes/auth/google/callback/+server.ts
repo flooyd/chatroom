@@ -50,7 +50,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 					.set({ 
 						googleId: googleUser.id,
 						isVerified: true, // Google accounts are verified
-						profilePictureUrl: existingUser.profilePictureUrl || googleUser.picture
+						// Don't update profilePictureUrl - keep their existing one or null
 					})
 					.where(eq(users.id, existingUser.id));
 			}

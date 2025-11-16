@@ -71,7 +71,7 @@ export const actions: Actions = {
 					email: googleUser.email,
 					googleId: googleUser.id,
 					isVerified: true, // Google users are auto-verified
-					profilePictureUrl: googleUser.picture || null,
+					profilePictureUrl: null, // Don't use Google picture, let them see username letter
 					passwordHash: null, // No password for Google users
 					verificationCode: null
 				})

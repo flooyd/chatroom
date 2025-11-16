@@ -16,6 +16,10 @@
 		<div class="google-info">
 			{#if data.picture}
 				<img src={data.picture} alt="Profile" class="google-avatar" />
+			{:else}
+				<div class="google-avatar-placeholder">
+					{username ? username.charAt(0).toUpperCase() : (data.email?.charAt(0).toUpperCase() || 'U')}
+				</div>
 			{/if}
 			<div class="info">
 				<div class="label">Email</div>
@@ -134,6 +138,20 @@
 		height: 56px;
 		border-radius: 50%;
 		border: 2px solid #00d4ff;
+	}
+
+	.google-avatar-placeholder {
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		border: 2px solid #00d4ff;
+		background: linear-gradient(135deg, #00d4ff, #00ffaa);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: white;
 	}
 
 	.info {
