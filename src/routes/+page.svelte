@@ -693,5 +693,14 @@
 			width: 100%;
 			justify-content: center;
 		}
+
+		.user-avatar,
+		.user-avatar-placeholder,
+		.msg-avatar,
+		.msg-avatar-placeholder {
+			width: 64px;
+			height: 64px;
+			font-size: 1.5rem;
+		}
 	}
 </style>

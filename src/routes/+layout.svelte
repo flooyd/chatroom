@@ -394,6 +394,10 @@
 			font-size: 1.1rem;
 		}
 
+		.nav-logo {
+			height: 40px;
+		}
+
 		.section-right a {
 			font-size: 0.85rem;
 			padding: 6px 12px;
