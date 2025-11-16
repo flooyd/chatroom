@@ -50,6 +50,7 @@
 		"vitest-browser-svelte": "^2.0.1"
 	},
 	"dependencies": {
+		"@anthropic-ai/sdk": "^0.69.0",
 		"@neondatabase/serverless": "^1.0.2",
 		"bcrypt": "^6.0.0",
 		"postgres": "^3.4.7",
