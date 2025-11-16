@@ -3,7 +3,6 @@ import { addMessage } from '$lib/server/messageStore';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { broadcastMessage } from '$lib/server/socket.js';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
@@ -37,8 +36,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 		const message = await addMessage(username, text, user?.profilePictureUrl);
 		
-		// Broadcast to all OTHER clients via Socket.IO
-		broadcastMessage(message);
+		// Broadcast to all clients via Socket.IO (global.io is set in server.js for production)
+		if (global.io) {
+			global.io.emit('new-message', message);
+			console.log('Message broadcasted via global.io');
+		} else {
+			console.warn('global.io not available, message not broadcasted');
+		}
 		
 		return json({ success: true, message });
 	} catch (error) {

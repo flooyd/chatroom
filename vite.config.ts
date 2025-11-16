@@ -1,13 +1,48 @@
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { initSocketIO } from './src/lib/server/socket.js';
+import { Server } from 'socket.io';
 
 const webSocketServer = {
 	name: 'webSocketServer',
 	configureServer(server: any) {
 		if (!server.httpServer) return;
-		initSocketIO(server.httpServer);
+		
+		const io = new Server(server.httpServer, {
+			cors: {
+				origin: '*',
+				methods: ['GET', 'POST']
+			}
+		});
+		
+		// Track online users
+		const onlineUsers = new Map<string, string>();
+
+		io.on('connection', (socket) => {
+			console.log('Client connected:', socket.id);
+
+			socket.on('user-online', (username: string) => {
+				console.log('User online:', username);
+				onlineUsers.set(socket.id, username);
+				
+				const onlineUsersList = Array.from(new Set(onlineUsers.values()));
+				io.emit('online-users', onlineUsersList);
+			});
+
+			socket.on('disconnect', () => {
+				const username = onlineUsers.get(socket.id);
+				if (username) {
+					console.log('User offline:', username);
+					onlineUsers.delete(socket.id);
+					
+					const onlineUsersList = Array.from(new Set(onlineUsers.values()));
+					io.emit('online-users', onlineUsersList);
+				}
+			});
+		});
+		
+		// Make io globally available
+		(global as any).io = io;
 	}
 };
 
