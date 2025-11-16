@@ -670,4 +670,20 @@
 			max-width: 85%;
 		}
 	}
+
+	@media (max-width: 600px) {
+		.message-input-form {
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.chat-input {
+			width: 100%;
+		}
+
+		.send-btn {
+			width: 100%;
+			justify-content: center;
+		}
+	}
 </style>
