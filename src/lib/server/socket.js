@@ -1,44 +1,50 @@
 import { Server } from 'socket.io';
 
-// Global Socket.IO instance
-export let io = null;
-const onlineUsers = new Map();
+// Global Socket.IO instance - use an object to maintain reference
+const socketState = {
+	io: null,
+	onlineUsers: new Map()
+};
 
-// Initialize for development (Vite)
+// Initialize for development (Vite) and production
 export function initSocketIO(httpServer) {
-	if (io) return io;
+	if (socketState.io) return socketState.io;
 	
-	io = new Server(httpServer);
+	socketState.io = new Server(httpServer);
 
-	io.on('connection', (socket) => {
+	socketState.io.on('connection', (socket) => {
 		console.log('Client connected:', socket.id);
 
 		socket.on('user-online', (username) => {
 			console.log('User online:', username);
-			onlineUsers.set(socket.id, username);
+			socketState.onlineUsers.set(socket.id, username);
 			
-			const onlineUsersList = Array.from(new Set(onlineUsers.values()));
-			io.emit('online-users', onlineUsersList);
+			const onlineUsersList = Array.from(new Set(socketState.onlineUsers.values()));
+			socketState.io.emit('online-users', onlineUsersList);
 		});
 
 		socket.on('disconnect', () => {
-			const username = onlineUsers.get(socket.id);
+			const username = socketState.onlineUsers.get(socket.id);
 			if (username) {
 				console.log('User offline:', username);
-				onlineUsers.delete(socket.id);
+				socketState.onlineUsers.delete(socket.id);
 				
-				const onlineUsersList = Array.from(new Set(onlineUsers.values()));
-				io.emit('online-users', onlineUsersList);
+				const onlineUsersList = Array.from(new Set(socketState.onlineUsers.values()));
+				socketState.io.emit('online-users', onlineUsersList);
 			}
 		});
 	});
 
-	return io;
+	return socketState.io;
 }
 
 // Broadcast message to all clients
 export function broadcastMessage(message) {
-	if (io) {
-		io.emit('new-message', message);
+	console.log('Broadcasting message:', message, 'IO exists:', !!socketState.io);
+	if (socketState.io) {
+		socketState.io.emit('new-message', message);
+		console.log('Message broadcasted successfully');
+	} else {
+		console.error('Socket.IO not initialized - cannot broadcast message');
 	}
 }
