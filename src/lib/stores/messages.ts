@@ -13,6 +13,7 @@ export interface Message {
 export const messages = writable<Message[]>([]);
 
 let socket: Socket | null = null;
+let currentUsername: string | null = null;
 
 export function initializeMessages(username: string | null, isVerified: boolean = false) {
 	if (!browser) return;
@@ -23,8 +24,11 @@ export function initializeMessages(username: string | null, isVerified: boolean 
 	// Only initialize if user is logged in and verified
 	if (!username || !isVerified) {
 		messages.set([]);
+		currentUsername = null;
 		return;
 	}
+
+	currentUsername = username;
 
 	// Initialize Socket.IO connection
 	socket = io();
@@ -35,7 +39,10 @@ export function initializeMessages(username: string | null, isVerified: boolean 
 
 	socket.on('new-message', (message: Message) => {
 		console.log('New message via socket:', message);
-		messages.update(currentMessages => [...currentMessages, message]);
+		// Only add if it's not from the current user (to avoid duplicates from optimistic updates)
+		if (message.username !== currentUsername) {
+			messages.update(currentMessages => [...currentMessages, message]);
+		}
 	});
 
 	socket.on('disconnect', () => {
