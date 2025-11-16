@@ -381,16 +381,16 @@
 			top: auto;
 			bottom: auto;
 			transform: translate(-50%, 0);
-			margin-top: 100px;
+			margin-top: 20px;
 			margin-bottom: 20px;
-			max-height: calc(100vh - 140px);
+			max-height: calc(100vh - 120px);
 			overflow-y: auto;
 		}
 
 		@supports (-webkit-touch-callout: none) {
 			/* iOS Safari specific */
 			.modal {
-				margin-top: 100px;
+				margin-top: 20px;
 			}
 		}
 	}
