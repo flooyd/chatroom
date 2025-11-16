@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 
-// Global singleton to ensure same instance across all imports
-let globalSocketManager = null;
+// Use globalThis to ensure singleton survives HMR in development
+const SOCKET_MANAGER_KEY = Symbol.for('app.socketManager');
 
 // Use a class to prevent tree-shaking
 class SocketManager {
@@ -17,7 +17,12 @@ class SocketManager {
 		}
 		
 		console.log('Initializing Socket.IO for the first time');
-		this.io = new Server(httpServer);
+		this.io = new Server(httpServer, {
+			cors: {
+				origin: '*',
+				methods: ['GET', 'POST']
+			}
+		});
 
 		this.io.on('connection', (socket) => {
 			console.log('Client connected:', socket.id);
@@ -62,12 +67,13 @@ class SocketManager {
 
 // Get or create the global singleton
 export function getSocketManager() {
-	if (!globalSocketManager) {
-		globalSocketManager = new SocketManager();
+	if (!globalThis[SOCKET_MANAGER_KEY]) {
+		console.log('Creating new SocketManager instance');
+		globalThis[SOCKET_MANAGER_KEY] = new SocketManager();
 	}
-	return globalSocketManager;
+	return globalThis[SOCKET_MANAGER_KEY];
 }
 
-export const socketManager = getSocketManager();
+// Export functions that always get the current singleton
 export const initSocketIO = (httpServer) => getSocketManager().initSocketIO(httpServer);
 export const broadcastMessage = (message) => getSocketManager().broadcastMessage(message);

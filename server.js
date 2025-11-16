@@ -1,13 +1,13 @@
 import { handler } from './build/handler.js';
 import express from 'express';
 import { createServer } from 'http';
-import { socketManager } from './src/lib/server/socket.js';
+import { getSocketManager } from './src/lib/server/socket.js';
 
 const app = express();
 const server = createServer(app);
 
 // Initialize Socket.IO
-socketManager.initSocketIO(server);
+getSocketManager().initSocketIO(server);
 
 // SvelteKit handler
 app.use(handler);
