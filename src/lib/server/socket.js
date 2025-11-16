@@ -1,5 +1,8 @@
 import { Server } from 'socket.io';
 
+// Global singleton to ensure same instance across all imports
+let globalSocketManager = null;
+
 // Use a class to prevent tree-shaking
 class SocketManager {
 	constructor() {
@@ -8,8 +11,12 @@ class SocketManager {
 	}
 
 	initSocketIO(httpServer) {
-		if (this.io) return this.io;
+		if (this.io) {
+			console.log('Socket.IO already initialized, returning existing instance');
+			return this.io;
+		}
 		
+		console.log('Initializing Socket.IO for the first time');
 		this.io = new Server(httpServer);
 
 		this.io.on('connection', (socket) => {
@@ -47,9 +54,20 @@ class SocketManager {
 			console.error('Socket.IO not initialized - cannot broadcast message');
 		}
 	}
+
+	getIO() {
+		return this.io;
+	}
 }
 
-// Export singleton instance
-export const socketManager = new SocketManager();
-export const initSocketIO = (httpServer) => socketManager.initSocketIO(httpServer);
-export const broadcastMessage = (message) => socketManager.broadcastMessage(message);
+// Get or create the global singleton
+export function getSocketManager() {
+	if (!globalSocketManager) {
+		globalSocketManager = new SocketManager();
+	}
+	return globalSocketManager;
+}
+
+export const socketManager = getSocketManager();
+export const initSocketIO = (httpServer) => getSocketManager().initSocketIO(httpServer);
+export const broadcastMessage = (message) => getSocketManager().broadcastMessage(message);
