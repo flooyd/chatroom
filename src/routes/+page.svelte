@@ -8,6 +8,14 @@
 	let messageText = $state('');
 	let messagesContainer = $state<HTMLDivElement>();
 	
+	// Create a map of username to profile picture for quick lookup
+	const userProfilePics = $derived(
+		data.users?.reduce((acc, user) => {
+			acc[user.username] = user.profilePictureUrl;
+			return acc;
+		}, {} as Record<string, string | null>) || {}
+	);
+	
 	function isUserOnline(username: string): boolean {
 		return $onlineUsers.includes(username);
 	}
@@ -120,8 +128,8 @@
 							<div class="message-bubble" class:own={message.username === data.user.username}>
 								{#if message.username !== data.user.username}
 									<div class="message-avatar-container">
-										{#if message.profilePictureUrl}
-											<img src={message.profilePictureUrl} alt="{message.username}" class="msg-avatar" />
+										{#if userProfilePics[message.username]}
+											<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
 										{:else}
 											<div class="msg-avatar-placeholder">
 												{message.username.charAt(0).toUpperCase()}
@@ -140,8 +148,8 @@
 								
 								{#if message.username === data.user.username}
 									<div class="message-avatar-container">
-										{#if message.profilePictureUrl}
-											<img src={message.profilePictureUrl} alt="{message.username}" class="msg-avatar" />
+										{#if userProfilePics[message.username]}
+											<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
 										{:else}
 											<div class="msg-avatar-placeholder">
 												{message.username.charAt(0).toUpperCase()}
@@ -318,13 +326,13 @@
 
 	.user-avatar-placeholder,
 	.user-avatar {
-		width: 42px;
-		height: 42px;
+		width: 64px;
+		height: 64px;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.1rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 		color: white;
 		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -484,13 +492,13 @@
 
 	.msg-avatar,
 	.msg-avatar-placeholder {
-		width: 36px;
-		height: 36px;
+		width: 64px;
+		height: 64px;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 0.95rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 		color: white;
 		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

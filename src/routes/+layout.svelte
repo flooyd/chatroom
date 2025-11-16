@@ -62,7 +62,10 @@
 </script>
 
 <nav>
-	<a class="title" href="/" onclick={() => showLoginModal = false}>{title}</a>
+	<a class="title" href="/" onclick={() => showLoginModal = false}>
+		<img src="/chatroomhouse.png" alt="Chatroom" class="nav-logo" />
+		{title}
+	</a>
 	<div class="section-right">
 		<a href="/about" onclick={() => showLoginModal = false}>About</a>
 		{#if loggedIn}
@@ -157,11 +160,25 @@
 		background-clip: text;
 		letter-spacing: -0.5px;
 		transition: all 0.3s;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.nav-logo {
+		height: 64px;
+		width: auto;
+		filter: drop-shadow(0 2px 8px rgba(0, 212, 255, 0.4));
+		transition: all 0.3s;
 	}
 
 	nav .title:hover {
 		transform: scale(1.05);
 		filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
+	}
+
+	nav .title:hover .nav-logo {
+		filter: drop-shadow(0 4px 12px rgba(0, 212, 255, 0.6));
 	}
 
 	.section-right {
@@ -190,7 +207,7 @@
 
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
-		padding-top: 80px;
+		padding-top: 120px;
 	}
 
 	.modal {
