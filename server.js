@@ -6,12 +6,16 @@ import { Server } from 'socket.io';
 const app = express();
 const server = createServer(app);
 
+// Serve static files from the build
+app.use(express.static('build/client'));
+
 // Initialize Socket.IO with CORS
 const io = new Server(server, {
 	cors: {
 		origin: process.env.ORIGIN || '*',
 		methods: ['GET', 'POST']
-	}
+	},
+	path: '/socket.io/'
 });
 
 // Track online users
@@ -48,5 +52,6 @@ app.use(handler);
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
-	console.log(`Listening on port ${port}`);
+	console.log(`Server listening on port ${port}`);
+	console.log('Socket.IO initialized and ready at /socket.io/');
 });
