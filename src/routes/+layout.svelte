@@ -378,6 +378,20 @@
 			width: calc(100% - 40px);
 			max-width: 400px;
 			padding: 24px;
+			top: auto;
+			bottom: auto;
+			transform: translate(-50%, 0);
+			margin-top: 100px;
+			margin-bottom: 20px;
+			max-height: calc(100vh - 140px);
+			overflow-y: auto;
+		}
+
+		@supports (-webkit-touch-callout: none) {
+			/* iOS Safari specific */
+			.modal {
+				margin-top: 100px;
+			}
 		}
 	}
 </style>

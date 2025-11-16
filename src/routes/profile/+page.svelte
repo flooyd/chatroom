@@ -395,18 +395,13 @@
 	}
 
 	@media (max-width: 600px) {
-		.profile-header-section {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 16px;
-		}
-
 		h1 {
 			font-size: 2rem;
 		}
 
 		.logout-btn-header {
-			width: 100%;
+			padding: 10px 20px;
+			font-size: 0.9rem;
 		}
 
 		.profile-picture-section form,
