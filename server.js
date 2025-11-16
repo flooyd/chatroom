@@ -1,14 +1,16 @@
 import { handler } from './build/handler.js';
 import { Server } from 'socket.io';
 import polka from 'polka';
+import { createServer } from 'http';
 
-const app = polka();
+// Create HTTP server first
+const httpServer = createServer();
+
+// Create Polka app and attach to the HTTP server
+const app = polka({ server: httpServer });
 
 // SvelteKit handler
 app.use(handler);
-
-// Get the HTTP server from polka (before calling listen)
-const httpServer = app.server;
 
 // Initialize Socket.IO on the same HTTP server
 const io = new Server(httpServer, {
@@ -48,7 +50,9 @@ io.on('connection', (socket) => {
 global.io = io;
 
 const port = process.env.PORT || 3000;
-app.listen(port, '0.0.0.0', () => {
-	console.log(`Server listening on port ${port}`);
+const host = process.env.HOST || '0.0.0.0';
+
+httpServer.listen(port, host, () => {
+	console.log(`Server listening on ${host}:${port}`);
 	console.log('Socket.IO initialized and ready');
 });
