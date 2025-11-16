@@ -1,16 +1,9 @@
 import { handler } from './build/handler.js';
 import { Server } from 'socket.io';
-import polka from 'polka';
 import { createServer } from 'http';
 
-// Create HTTP server first
-const httpServer = createServer();
-
-// Create Polka app and attach to the HTTP server
-const app = polka({ server: httpServer });
-
-// SvelteKit handler
-app.use(handler);
+// Create HTTP server with the SvelteKit handler
+const httpServer = createServer(handler);
 
 // Initialize Socket.IO on the same HTTP server
 const io = new Server(httpServer, {
