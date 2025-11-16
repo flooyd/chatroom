@@ -26,9 +26,18 @@
 			disconnectSocket();
 			disconnectMessages();
 		}
+
+		// Check if URL has #login hash and open modal
+		if (typeof window !== 'undefined' && window.location.hash === '#login') {
+			showLoginModal = true;
+			// Remove the hash from URL
+			window.history.replaceState(null, '', window.location.pathname);
+		}
 	});
 
 	const openLoginModal = () => {
+		// Redirect to home page to show login modal
+		window.location.href = '/#login';
 		showLoginModal = true;
 		loginOrRegister = "Login";
 		errorMessage = "";
@@ -53,11 +62,11 @@
 </script>
 
 <nav>
-	<a class="title" href="/">{title}</a>
+	<a class="title" href="/" onclick={() => showLoginModal = false}>{title}</a>
 	<div class="section-right">
-		<a href="/about">About</a>
+		<a href="/about" onclick={() => showLoginModal = false}>About</a>
 		{#if loggedIn}
-			<a href="/profile">{username}</a>
+			<a href="/profile" onclick={() => showLoginModal = false}>{username}</a>
 		{:else}
 			<button onclick={openLoginModal}>Login</button>
 		{/if}
@@ -67,9 +76,6 @@
 {@render children()}
 
 {#if showLoginModal}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal-backdrop" onclick={() => (showLoginModal = false)}></div>
 	<div class="modal">
 		<div class="modal-title">
 			{loginOrRegister}
@@ -185,23 +191,6 @@
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
 		padding-top: 80px;
-	}
-
-	.modal-backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(4px);
-		z-index: 1999;
-		animation: fadeIn 0.3s ease-out;
-	}
-
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
 	}
 
 	.modal {
