@@ -34,8 +34,8 @@
 			action="?/completeSignup"
 			use:enhance={() => {
 				return async ({ result, update }) => {
-					if (result.type === 'failure') {
-						errorMessage = result.data?.error || 'An error occurred';
+					if (result.type === 'failure' && result.data) {
+						errorMessage = (result.data as { error?: string }).error || 'An error occurred';
 					}
 					await update();
 				};
