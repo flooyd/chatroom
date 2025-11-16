@@ -1,21 +1,17 @@
-import { handler } from './build/handler.js';
-import express from 'express';
-import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { createServer } from 'http';
 
-const app = express();
-const server = createServer(app);
+// Import the built SvelteKit app
+const { server: svelteApp } = await import('./build/index.js');
 
-// Serve static files from the build
-app.use(express.static('build/client'));
+const httpServer = createServer(svelteApp);
 
 // Initialize Socket.IO with CORS
-const io = new Server(server, {
+const io = new Server(httpServer, {
 	cors: {
 		origin: process.env.ORIGIN || '*',
 		methods: ['GET', 'POST']
-	},
-	path: '/socket.io/'
+	}
 });
 
 // Track online users
@@ -47,11 +43,8 @@ io.on('connection', (socket) => {
 // Make io globally available for the API routes
 global.io = io;
 
-// SvelteKit handler
-app.use(handler);
-
 const port = process.env.PORT || 3000;
-server.listen(port, () => {
+httpServer.listen(port, () => {
 	console.log(`Server listening on port ${port}`);
-	console.log('Socket.IO initialized and ready at /socket.io/');
+	console.log('Socket.IO initialized and ready');
 });
