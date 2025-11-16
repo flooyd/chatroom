@@ -207,7 +207,7 @@
 
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
-		padding-top: 120px;
+		padding-top: 65px;
 	}
 
 	.modal {
