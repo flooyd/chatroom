@@ -1,3 +1,4 @@
+// @ts-check
 import { Server } from 'socket.io';
 
 // Use globalThis to ensure singleton survives HMR in development
@@ -6,10 +7,16 @@ const SOCKET_MANAGER_KEY = Symbol.for('app.socketManager');
 // Use a class to prevent tree-shaking
 class SocketManager {
 	constructor() {
+		/** @type {import('socket.io').Server | null} */
 		this.io = null;
+		/** @type {Map<string, string>} */
 		this.onlineUsers = new Map();
 	}
 
+	/**
+	 * @param {import('http').Server} httpServer
+	 * @returns {import('socket.io').Server}
+	 */
 	initSocketIO(httpServer) {
 		if (this.io) {
 			console.log('Socket.IO already initialized, returning existing instance');
@@ -32,7 +39,7 @@ class SocketManager {
 				this.onlineUsers.set(socket.id, username);
 				
 				const onlineUsersList = Array.from(new Set(this.onlineUsers.values()));
-				this.io.emit('online-users', onlineUsersList);
+				if (this.io) this.io.emit('online-users', onlineUsersList);
 			});
 
 			socket.on('disconnect', () => {
@@ -42,7 +49,7 @@ class SocketManager {
 					this.onlineUsers.delete(socket.id);
 					
 					const onlineUsersList = Array.from(new Set(this.onlineUsers.values()));
-					this.io.emit('online-users', onlineUsersList);
+					if (this.io) this.io.emit('online-users', onlineUsersList);
 				}
 			});
 		});
@@ -50,6 +57,9 @@ class SocketManager {
 		return this.io;
 	}
 
+	/**
+	 * @param {any} message
+	 */
 	broadcastMessage(message) {
 		console.log('Broadcasting message:', message, 'IO exists:', !!this.io);
 		if (this.io) {
@@ -66,14 +76,26 @@ class SocketManager {
 }
 
 // Get or create the global singleton
+/**
+ * @returns {SocketManager}
+ */
 export function getSocketManager() {
+	// @ts-ignore - Using symbol key on globalThis
 	if (!globalThis[SOCKET_MANAGER_KEY]) {
 		console.log('Creating new SocketManager instance');
+		// @ts-ignore
 		globalThis[SOCKET_MANAGER_KEY] = new SocketManager();
 	}
+	// @ts-ignore
 	return globalThis[SOCKET_MANAGER_KEY];
 }
 
 // Export functions that always get the current singleton
+/**
+ * @param {import('http').Server} httpServer
+ */
 export const initSocketIO = (httpServer) => getSocketManager().initSocketIO(httpServer);
+/**
+ * @param {any} message
+ */
 export const broadcastMessage = (message) => getSocketManager().broadcastMessage(message);

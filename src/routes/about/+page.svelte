@@ -38,7 +38,7 @@
 		<div class="feature-card">
 			<div class="card-icon">⚡</div>
 			<h2>Built with Modern Tech</h2>
-			<p>Powered by SvelteKit 5, PostgreSQL with Drizzle ORM, and deployed on Vercel with serverless functions.</p>
+			<p>Powered by SvelteKit 5, PostgreSQL with Drizzle ORM, and deployed on Render.</p>
 		</div>
 	</div>
 
@@ -50,7 +50,7 @@
 			<div class="tech-badge">PostgreSQL</div>
 			<div class="tech-badge">Drizzle ORM</div>
 			<div class="tech-badge">TypeScript</div>
-			<div class="tech-badge">Vercel</div>
+			<div class="tech-badge">Render</div>
 		</div>
 	</div>
 </div>

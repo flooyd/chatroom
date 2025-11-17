@@ -182,13 +182,14 @@
 							<span>Start the conversation!</span>
 						</div>
 					{:else}
-						{#each $messages as message (message.id)}
-							<div 
-								class="message-wrapper"
-								class:own={message.username === data.user.username}
-								onmouseenter={() => hoveredMessageId = message.id}
-								onmouseleave={() => hoveredMessageId = null}
-							>
+					{#each $messages as message (message.id)}
+						<div 
+							class="message-wrapper"
+							class:own={message.username === data.user.username}
+							role="article"
+							onmouseenter={() => hoveredMessageId = message.id}
+							onmouseleave={() => hoveredMessageId = null}
+						>
 								<div 
 									class="message-bubble"
 								>
@@ -231,8 +232,8 @@
 											<button 
 												class="ai-respond-btn"
 												onclick={() => handleAiResponse(message.id)}
-												disabled={isAiResponding}
-												title="Ask AI to respond"
+												disabled={true}
+												title="Ask AI to respond (disabled)"
 											>
 												🤖
 											</button>
