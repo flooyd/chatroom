@@ -64,12 +64,12 @@ ${conversationHistory}
 The user is asking you to respond to this specific message:
 "${targetMessage.username}: ${targetMessage.text}"
 
-Please provide a helpful, friendly, and conversational response. Keep it concise (1-3 sentences) and natural, as if you're chatting with friends.`;
+Please provide a helpful, friendly, and conversational response. Keep it natural, as if you're chatting with friends.`;
 
 		// Call Claude API
 		const response = await anthropic.messages.create({
-			model: 'claude-sonnet-4-20250514',
-			max_tokens: 200,
+			model: 'claude-sonnet-4-5',
+			max_tokens: 1000,
 			messages: [
 				{
 					role: 'user',
