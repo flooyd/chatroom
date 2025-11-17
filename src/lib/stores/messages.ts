@@ -45,6 +45,11 @@ export function initializeMessages(username: string | null, isVerified: boolean 
 		}
 	});
 
+	socket.on('delete-message', (messageId: number) => {
+		console.log('Delete message via socket:', messageId);
+		messages.update(currentMessages => currentMessages.filter(m => m.id !== messageId));
+	});
+
 	socket.on('disconnect', () => {
 		console.log('Messages Socket.IO disconnected');
 	});

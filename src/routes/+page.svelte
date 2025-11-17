@@ -7,6 +7,8 @@
 	let { data } = $props();
 	let messageText = $state('');
 	let messagesContainer = $state<HTMLDivElement>();
+	let hoveredMessageId = $state<number | null>(null);
+	let isAiResponding = $state(false);
 	
 	// Create a map of username to profile picture for quick lookup
 	const userProfilePics = $derived(
@@ -55,6 +57,62 @@
 					messagesContainer.scrollTop = messagesContainer.scrollHeight;
 				}
 			}, 100);
+		}
+	}
+
+	async function handleAiResponse(messageId: number) {
+		if (isAiResponding) return;
+		
+		isAiResponding = true;
+		hoveredMessageId = null;
+		
+		try {
+			const response = await fetch('/api/messages/ai-respond', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ messageId })
+			});
+			
+			const data = await response.json();
+			
+			if (!data.success) {
+				console.error('AI response failed:', data.error);
+			}
+			
+			// Scroll to bottom to show AI response
+			setTimeout(() => {
+				if (messagesContainer) {
+					messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				}
+			}, 100);
+		} catch (error) {
+			console.error('Failed to get AI response:', error);
+		} finally {
+			isAiResponding = false;
+		}
+	}
+
+	async function handleDeleteMessage(messageId: number) {
+		if (!confirm('Are you sure you want to delete this message?')) return;
+		
+		hoveredMessageId = null;
+		
+		try {
+			const response = await fetch('/api/messages/delete', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ messageId })
+			});
+			
+			const result = await response.json();
+			
+			if (!result.success) {
+				console.error('Delete failed:', result.error);
+				alert('Failed to delete message');
+			}
+		} catch (error) {
+			console.error('Failed to delete message:', error);
+			alert('Failed to delete message');
 		}
 	}
 
@@ -125,35 +183,68 @@
 						</div>
 					{:else}
 						{#each $messages as message (message.id)}
-							<div class="message-bubble" class:own={message.username === data.user.username}>
-								{#if message.username !== data.user.username}
-									<div class="message-avatar-container">
-										{#if userProfilePics[message.username]}
-											<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
-										{:else}
-											<div class="msg-avatar-placeholder">
-												{message.username.charAt(0).toUpperCase()}
-											</div>
-										{/if}
+							<div 
+								class="message-wrapper"
+								class:own={message.username === data.user.username}
+								onmouseenter={() => hoveredMessageId = message.id}
+								onmouseleave={() => hoveredMessageId = null}
+							>
+								<div 
+									class="message-bubble"
+								>
+									{#if message.username !== data.user.username}
+										<div class="message-avatar-container">
+											{#if userProfilePics[message.username]}
+												<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
+											{:else}
+												<div class="msg-avatar-placeholder">
+													{message.username.charAt(0).toUpperCase()}
+												</div>
+											{/if}
+										</div>
+									{/if}
+									
+									<div class="bubble-content">
+										<div class="bubble-header">
+											<span class="bubble-username">{message.username}</span>
+											<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
+										</div>
+										<div class="bubble-text">{message.text}</div>
 									</div>
-								{/if}
-								
-								<div class="bubble-content">
-									<div class="bubble-header">
-										<span class="bubble-username">{message.username}</span>
-										<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
-									</div>
-									<div class="bubble-text">{message.text}</div>
+									
+									{#if message.username === data.user.username}
+										<div class="message-avatar-container">
+											{#if userProfilePics[message.username]}
+												<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
+											{:else}
+												<div class="msg-avatar-placeholder">
+													{message.username.charAt(0).toUpperCase()}
+												</div>
+											{/if}
+										</div>
+									{/if}
 								</div>
 								
-								{#if message.username === data.user.username}
-									<div class="message-avatar-container">
-										{#if userProfilePics[message.username]}
-											<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
-										{:else}
-											<div class="msg-avatar-placeholder">
-												{message.username.charAt(0).toUpperCase()}
-											</div>
+								{#if hoveredMessageId === message.id}
+									<div class="message-actions">
+										{#if message.username !== 'claude'}
+											<button 
+												class="ai-respond-btn"
+												onclick={() => handleAiResponse(message.id)}
+												disabled={isAiResponding}
+												title="Ask AI to respond"
+											>
+												🤖
+											</button>
+										{/if}
+										{#if data.user?.username === 'admin' || message.username === data.user?.username}
+											<button 
+												class="delete-btn"
+												onclick={() => handleDeleteMessage(message.id)}
+												title="Delete message"
+											>
+												🗑️
+											</button>
 										{/if}
 									</div>
 								{/if}
@@ -462,16 +553,26 @@
 	}
 
 	/* Message Bubbles */
+	.message-wrapper {
+		display: flex;
+		align-items: flex-end;
+		gap: 8px;
+		animation: messageSlide 0.3s ease-out;
+		position: relative;
+	}
+
+	.message-wrapper.own {
+		justify-content: flex-end;
+	}
+
 	.message-bubble {
 		display: flex;
 		gap: 12px;
 		align-items: flex-end;
-		animation: messageSlide 0.3s ease-out;
 		max-width: 75%;
 	}
 
-	.message-bubble.own {
-		align-self: flex-end;
+	.message-wrapper.own .message-bubble {
 		flex-direction: row-reverse;
 	}
 
@@ -518,7 +619,7 @@
 		transition: all 0.2s;
 	}
 
-	.message-bubble.own .bubble-content {
+	.message-wrapper.own .bubble-content {
 		background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 200, 100, 0.1));
 		border-color: rgba(0, 255, 136, 0.3);
 		border-radius: 18px 18px 4px 18px;
@@ -542,7 +643,7 @@
 		color: #00d4ff;
 	}
 
-	.message-bubble.own .bubble-username {
+	.message-wrapper.own .bubble-username {
 		color: #00ff88;
 	}
 
@@ -556,6 +657,88 @@
 		font-size: 0.95rem;
 		line-height: 1.5;
 		color: rgba(255, 255, 255, 0.95);
+	}
+
+	.message-actions {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-bottom: 6px;
+	}
+
+	.ai-respond-btn,
+	.delete-btn {
+		flex-shrink: 0;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		border: 1px solid;
+		border-radius: 50%;
+		color: white;
+		font-size: 1.2rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		animation: fadeInButton 0.2s ease-out;
+	}
+
+	.ai-respond-btn {
+		background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+		border-color: rgba(139, 92, 246, 0.5);
+	}
+
+	.ai-respond-btn:hover:not(:disabled) {
+		transform: scale(1.1);
+		box-shadow: 0 4px 16px rgba(139, 92, 246, 0.6);
+		background: linear-gradient(135deg, #7c3aed, #6d28d9);
+	}
+
+	.ai-respond-btn:active:not(:disabled) {
+		transform: scale(0.95);
+	}
+
+	.ai-respond-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		animation: pulse-ai 1.5s infinite;
+	}
+
+	.delete-btn {
+		background: linear-gradient(135deg, #ef4444, #dc2626);
+		border-color: rgba(239, 68, 68, 0.5);
+	}
+
+	.delete-btn:hover {
+		transform: scale(1.1);
+		box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+		background: linear-gradient(135deg, #dc2626, #b91c1c);
+	}
+
+	.delete-btn:active {
+		transform: scale(0.95);
+	}
+
+	@keyframes fadeInButton {
+		from {
+			opacity: 0;
+			transform: scale(0.8);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	@keyframes pulse-ai {
+		0%, 100% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.05);
+		}
 	}
 
 	/* Input Area */

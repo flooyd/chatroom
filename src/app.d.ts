@@ -8,6 +8,8 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+	
+	var io: import('socket.io').Server | undefined;
 }
 
 export {};

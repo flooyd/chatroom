@@ -68,3 +68,11 @@ async function cleanupOldMessages(): Promise<void> {
 		)
 	`);
 }
+
+export async function deleteMessage(messageId: number): Promise<boolean> {
+	const result = await db
+		.delete(messages)
+		.where(sql`${messages.id} = ${messageId}`);
+	
+	return true;
+}
