@@ -8,6 +8,7 @@ export interface Message {
 	text: string;
 	timestamp: number;
 	profilePictureUrl?: string | null;
+	linkToMessage?: number | null;
 }
 
 export const messages = writable<Message[]>([]);

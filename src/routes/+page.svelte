@@ -18,8 +18,17 @@
 		}, {} as Record<string, string | null>) || {}
 	);
 	
+	// Create a set of message IDs that have already been linked to
+	const linkedMessageIds = $derived(
+		new Set($messages.filter(m => m.linkToMessage).map(m => m.linkToMessage))
+	);
+	
 	function isUserOnline(username: string): boolean {
 		return $onlineUsers.includes(username);
+	}
+	
+	function isMessageLinked(messageId: number): boolean {
+		return linkedMessageIds.has(messageId);
 	}
 
 	function formatLastOnline(lastOnlineTime: Date | null): string {
@@ -122,6 +131,34 @@
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		}
 	});
+
+	// Update link lines when messages change
+	$effect(() => {
+		if ($messages.length > 0 && messagesContainer) {
+			setTimeout(() => {
+				if (!messagesContainer) return;
+				
+				const linkLines = messagesContainer.querySelectorAll('.message-link-line');
+				linkLines.forEach((line) => {
+					const linkTo = line.getAttribute('data-link-to');
+					if (!linkTo || !messagesContainer) return;
+					
+					const wrapper = line.closest('.message-wrapper');
+					const targetWrapper = messagesContainer.querySelector(`[data-message-id="${linkTo}"]`);
+					
+					if (wrapper && targetWrapper) {
+						const wrapperRect = wrapper.getBoundingClientRect();
+						const targetRect = targetWrapper.getBoundingClientRect();
+						const height = wrapperRect.top - targetRect.bottom;
+						
+						if (height > 0) {
+							(line as HTMLElement).style.height = `${height}px`;
+						}
+					}
+				});
+			}, 50);
+		}
+	});
 </script>
 
 {#if data.user && !data.user.isVerified}
@@ -159,12 +196,12 @@
 								{/if}
 								<div class="status-pulse" class:active={isUserOnline(user.username)}></div>
 							</div>
-							<div class="user-info">
-								<span class="username">{user.username}</span>
-								{#if !isUserOnline(user.username)}
-									<span class="last-seen">{formatLastOnline(user.lastOnlineTime)}</span>
-								{/if}
-							</div>
+						<div class="user-info">
+							<span class="username" class:claude={user.username === 'claude'} class:current-user={data.user && user.username === data.user.username}>{user.username}</span>
+							{#if !isUserOnline(user.username)}
+								<span class="last-seen">{formatLastOnline(user.lastOnlineTime)}</span>
+							{/if}
+						</div>
 						</div>
 					{/each}
 				</div>
@@ -186,10 +223,16 @@
 						<div 
 							class="message-wrapper"
 							class:own={message.username === data.user.username}
+							class:has-link={message.linkToMessage}
 							role="article"
+							data-message-id={message.id}
 							onmouseenter={() => hoveredMessageId = message.id}
 							onmouseleave={() => hoveredMessageId = null}
 						>
+								{#if message.linkToMessage}
+									<div class="message-link-line" data-link-to={message.linkToMessage}></div>
+								{/if}
+								
 								<div 
 									class="message-bubble"
 								>
@@ -205,15 +248,18 @@
 										</div>
 									{/if}
 									
-									<div class="bubble-content">
-										<div class="bubble-header">
-											<span class="bubble-username">{message.username}</span>
-											<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
-										</div>
-										<div class="bubble-text">{message.text}</div>
-									</div>
-									
-									{#if message.username === data.user.username}
+						<div class="bubble-content">
+							<div class="bubble-header">
+								<span class="bubble-username" class:claude={message.username === 'claude'}>{message.username}</span>
+								{#if message.username === 'claude' && message.linkToMessage}
+									<span class="message-id-note">responding to ID {message.linkToMessage}</span>
+								{:else if message.username !== 'claude'}
+									<span class="message-id-note">ID - {message.id}</span>
+								{/if}
+								<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
+							</div>
+								<div class="bubble-text">{message.text}</div>
+							</div>									{#if message.username === data.user.username}
 										<div class="message-avatar-container">
 											{#if userProfilePics[message.username]}
 												<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
@@ -232,8 +278,8 @@
 											<button 
 												class="ai-respond-btn"
 												onclick={() => handleAiResponse(message.id)}
-												disabled={true}
-												title="Ask AI to respond (disabled)"
+												disabled={isAiResponding || isMessageLinked(message.id)}
+												title={isMessageLinked(message.id) ? "AI already responded to this message" : isAiResponding ? "AI is responding..." : "Ask AI to respond (disabled)"}
 											>
 												🤖
 											</button>
@@ -477,6 +523,16 @@
 		text-overflow: ellipsis;
 	}
 
+	.username.claude {
+		color: #a855f7;
+		font-weight: 700;
+	}
+
+	.username.current-user {
+		color: #10b981;
+		font-weight: 700;
+	}
+
 	.last-seen {
 		display: block;
 		font-size: 0.75rem;
@@ -566,6 +622,33 @@
 		justify-content: flex-end;
 	}
 
+	.message-link-line {
+		position: absolute;
+		left: 32px;
+		bottom: 100%;
+		width: 2px;
+		background: linear-gradient(180deg, rgba(139, 92, 246, 0.6), rgba(139, 92, 246, 0.2));
+		pointer-events: none;
+		border-radius: 2px;
+		animation: linkLineGrow 0.3s ease-out;
+	}
+
+	.message-wrapper.own .message-link-line {
+		left: auto;
+		right: 32px;
+		background: linear-gradient(180deg, rgba(139, 92, 246, 0.6), rgba(139, 92, 246, 0.2));
+	}
+
+	@keyframes linkLineGrow {
+		from {
+			height: 0;
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
 	.message-bubble {
 		display: flex;
 		gap: 12px;
@@ -646,6 +729,16 @@
 
 	.message-wrapper.own .bubble-username {
 		color: #00ff88;
+	}
+
+	.bubble-username.claude {
+		color: #a855f7;
+	}
+
+	.message-id-note {
+		font-size: 0.7rem;
+		color: rgba(255, 255, 255, 0.3);
+		font-weight: 400;
 	}
 
 	.bubble-time {

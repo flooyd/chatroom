@@ -9,20 +9,27 @@ interface Message {
 	text: string;
 	timestamp: number;
 	profilePictureUrl?: string | null;
+	linkToMessage?: number | null;
 }
 
 const MAX_MESSAGES = 50; // Keep only last 50 messages
 
-export async function addMessage(username: string, text: string, profilePictureUrl?: string | null): Promise<Message> {
+export async function addMessage(username: string, text: string, profilePictureUrl?: string | null, linkToMessage?: number | null): Promise<Message> {
 	// Insert the new message
+	const values: any = {
+		username,
+		text,
+		timestamp: Date.now(),
+		profilePictureUrl
+	};
+	
+	if (linkToMessage !== undefined && linkToMessage !== null) {
+		values.linkToMessage = linkToMessage;
+	}
+	
 	const [message] = await db
 		.insert(messages)
-		.values({
-			username,
-			text,
-			timestamp: Date.now(),
-			profilePictureUrl
-		})
+		.values(values)
 		.returning();
 
 	// Clean up old messages (keep only last MAX_MESSAGES)
@@ -33,7 +40,8 @@ export async function addMessage(username: string, text: string, profilePictureU
 		username: message.username,
 		text: message.text,
 		timestamp: message.timestamp,
-		profilePictureUrl: message.profilePictureUrl
+		profilePictureUrl: message.profilePictureUrl,
+		linkToMessage: message.linkToMessage
 	};
 }
 

@@ -51,6 +51,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			return json({ error: 'Message not found' }, { status: 404 });
 		}
 
+		// Check if this message has already been linked to by another AI response
+		const existingLink = chronologicalMessages.find(msg => msg.linkToMessage === messageId);
+		if (existingLink) {
+			return json({ error: 'AI has already responded to this message' }, { status: 409 });
+		}
+
 		// Format conversation history for Claude
 		const conversationHistory = chronologicalMessages
 			.map(msg => `${msg.username}: ${msg.text}`)
@@ -83,8 +89,8 @@ Please provide a helpful, friendly, and conversational response. Keep it natural
 			? response.content[0].text 
 			: 'Sorry, I could not generate a response.';
 
-		// Post the AI response as a message from user "claude"
-		const aiMessage = await addMessage('claude', aiResponseText, null);
+		// Post the AI response as a message from user "claude" with link to original message
+		const aiMessage = await addMessage('claude', aiResponseText, null, messageId);
 		
 		// Broadcast to all clients via Socket.IO
 		if (global.io) {

@@ -18,4 +18,5 @@ export const messages = pgTable('messages', {
 	text: text('text').notNull(),
 	timestamp: bigint('timestamp', { mode: 'number' }).notNull(),
 	profilePictureUrl: text('profile_picture_url'),
+	linkToMessage: bigint('link_to_message', { mode: 'number' }),
 });
