@@ -435,11 +435,12 @@
 		}
 
 		nav .title {
-			font-size: 1.1rem;
+			font-size: 1rem;
 		}
 
 		.nav-logo {
-			height: 40px;
+			height: 32px;
+			width: auto;
 		}
 
 		.section-right a {
