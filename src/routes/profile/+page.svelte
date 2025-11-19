@@ -112,7 +112,7 @@
 	.profile-container {
 		max-width: 700px;
 		margin: 0 auto;
-		padding: 20px 20px 40px;
+		padding: 20px;
 	}
 
 	.profile-header-section {
@@ -136,7 +136,7 @@
 	.logout-btn-header {
 		background: linear-gradient(135deg, rgba(255, 62, 0, 0.8), rgba(200, 40, 0, 0.8));
 		border: 2px solid rgba(255, 62, 0, 0.5);
-		padding: 12px 24px;
+		padding: 8px;
 		font-size: 1rem;
 		box-shadow: 0 4px 16px rgba(255, 62, 0, 0.2);
 		white-space: nowrap;
@@ -201,7 +201,7 @@
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		border-radius: 20px;
-		padding: 28px;
+		padding: 8px;
 		margin-bottom: 24px;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 		animation: fadeIn 0.5s ease-out 0.1s backwards;
@@ -209,7 +209,7 @@
 
 	.info-row {
 		display: flex;
-		padding: 16px 0;
+		padding: 8px 0;
 		border-bottom: 1px solid rgba(0, 212, 255, 0.15);
 		align-items: center;
 	}
@@ -253,7 +253,7 @@
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		border-radius: 20px;
-		padding: 28px;
+		padding: 8px;
 		margin-bottom: 24px;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 		animation: fadeIn 0.5s ease-out 0.2s backwards;
@@ -297,7 +297,7 @@
 		background: linear-gradient(135deg, #00d4ff, #00ffaa);
 		border: none;
 		white-space: nowrap;
-		padding: 14px 28px;
+		padding: 8px;
 		font-weight: 700;
 		box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
 	}
@@ -312,7 +312,7 @@
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(255, 193, 7, 0.4);
 		border-radius: 20px;
-		padding: 28px;
+		padding: 8px;
 		margin-bottom: 24px;
 		box-shadow: 0 8px 32px rgba(255, 193, 7, 0.1);
 		animation: fadeIn 0.5s ease-out 0.2s backwards;
@@ -340,7 +340,7 @@
 	.verification-section input {
 		flex: 1;
 		min-width: 200px;
-		padding: 14px 18px;
+		padding: 8px;
 		border: 2px solid rgba(255, 193, 7, 0.4);
 		border-radius: 12px;
 		background: rgba(255, 255, 255, 0.05);
@@ -363,7 +363,7 @@
 		background: linear-gradient(135deg, #ffc107, #ff9900);
 		border: none;
 		white-space: nowrap;
-		padding: 14px 28px;
+		padding: 8px;
 		font-weight: 700;
 		color: #000;
 		box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
@@ -378,7 +378,7 @@
 		color: #ff3e00;
 		margin: 12px 0 0 0;
 		font-weight: 600;
-		padding: 12px;
+		padding: 8px;
 		background: rgba(255, 62, 0, 0.1);
 		border-radius: 8px;
 		border-left: 4px solid #ff3e00;
@@ -388,7 +388,7 @@
 		color: #00ffaa;
 		margin: 12px 0 0 0;
 		font-weight: 600;
-		padding: 12px;
+		padding: 8px;
 		background: rgba(0, 255, 170, 0.1);
 		border-radius: 8px;
 		border-left: 4px solid #00ffaa;
@@ -400,7 +400,7 @@
 		}
 
 		.logout-btn-header {
-			padding: 10px 20px;
+			padding: 8px;
 			font-size: 0.9rem;
 		}
 
