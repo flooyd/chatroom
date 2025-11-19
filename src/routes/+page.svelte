@@ -975,9 +975,9 @@
 		.user-avatar-placeholder,
 		.msg-avatar,
 		.msg-avatar-placeholder {
-			width: 64px;
-			height: 64px;
-			font-size: 1.5rem;
+			width: auto;
+			height: 40px;
+			font-size: 1rem;
 		}
 	}
 </style>
