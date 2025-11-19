@@ -84,6 +84,7 @@
 		<a href="/about" onclick={() => menuOpen = false}>About</a>
 		<a href="/users" onclick={() => menuOpen = false}>Users</a>
 		{#if loggedIn}
+			<a href="/files" onclick={() => menuOpen = false}>File Manager</a>
 			<a href="/profile" onclick={() => menuOpen = false}>Profile</a>
 		{:else}
 			<button onclick={() => { openLoginModal(); menuOpen = false; }}>Login</button>

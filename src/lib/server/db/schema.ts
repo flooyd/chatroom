@@ -20,3 +20,11 @@ export const messages = pgTable('messages', {
 	profilePictureUrl: text('profile_picture_url'),
 	linkToMessage: bigint('link_to_message', { mode: 'number' }),
 });
+
+export const documents = pgTable('documents', {
+	id: serial('id').primaryKey(),
+	userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+	filename: text('filename').notNull(),
+	content: text('content').notNull(),
+	uploadedAt: timestamp('uploaded_at').notNull().defaultNow(),
+});
