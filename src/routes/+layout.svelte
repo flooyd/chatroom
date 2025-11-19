@@ -226,7 +226,7 @@
 		color: rgba(255, 255, 255, 0.8);
 		font-weight: 600;
 		font-size: 0.95rem;
-		padding: 8px 16px;
+		padding: 8px;
 		border-radius: 8px;
 		transition: all 0.2s;
 	}
@@ -250,7 +250,7 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		padding: 36px;
+		padding: 16px;
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.98), rgba(8, 8, 12, 0.96));
 		backdrop-filter: blur(30px);
 		border: 1px solid rgba(0, 212, 255, 0.4);
@@ -295,7 +295,7 @@
 	.modal-title {
 		font-size: 1.8rem;
 		font-weight: 700;
-		padding-bottom: 16px;
+		padding-bottom: 8px;
 		border-bottom: 1px solid rgba(0, 212, 255, 0.2);
 		margin-bottom: 24px;
 		display: flex;
@@ -374,7 +374,7 @@
 		border: none;
 		color: #00d4ff;
 		text-decoration: none;
-		padding: 5px;
+		padding: 8px;
 		cursor: pointer;
 		font-weight: 600;
 		box-shadow: none;
@@ -392,7 +392,7 @@
 		justify-content: center;
 		gap: 12px;
 		width: 100%;
-		padding: 14px 20px;
+		padding: 16px;
 		background: white;
 		color: #1f1f1f;
 		font-weight: 600;
@@ -445,7 +445,7 @@
 
 		.section-right a {
 			font-size: 0.85rem;
-			padding: 6px 12px;
+			padding: 8px;
 		}
 
 		.modal {
