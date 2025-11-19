@@ -41,7 +41,7 @@ ${doc.content}
 			.join('\n\n');
 
 		// Create the RAG prompt
-		const systemPrompt = `You are a helpful AI assistant. Answer the user's question based ONLY on the following documents. If the answer cannot be found in the documents, say so clearly.
+		const systemPrompt = `You are a helpful AI assistant. Answer the user's question based on the following documents. If the answer cannot be found in the documents, say so clearly.
 
 ${combinedContext}`;
 
