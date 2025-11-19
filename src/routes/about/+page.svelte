@@ -59,12 +59,12 @@
 	.about-container {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 40px 20px;
+		padding: 32px 20px;
 	}
 
 	.about-header {
 		text-align: center;
-		margin-bottom: 60px;
+		margin-bottom: 32px;
 		position: relative;
 	}
 
@@ -122,8 +122,8 @@
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.9), rgba(8, 8, 12, 0.85));
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
-		border-radius: 20px;
-		padding: 32px;
+		border-radius: 12px;
+		padding: 16px;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 		animation: fadeIn 0.6s ease-out backwards;
@@ -165,8 +165,8 @@
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.9), rgba(8, 8, 12, 0.85));
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
-		border-radius: 20px;
-		padding: 40px;
+		border-radius: 12px;
+		padding: 16px;
 		text-align: center;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 		animation: fadeIn 0.6s ease-out 0.7s backwards;
@@ -190,7 +190,7 @@
 		background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 170, 0.1));
 		border: 1px solid rgba(0, 212, 255, 0.4);
 		border-radius: 12px;
-		padding: 12px 24px;
+		padding: 8px;
 		font-weight: 600;
 		color: #00ffaa;
 		transition: all 0.3s;
@@ -211,10 +211,6 @@
 
 		.content-grid {
 			grid-template-columns: 1fr;
-		}
-
-		.tech-section {
-			padding: 28px 20px;
 		}
 
 		.tech-section h2 {
