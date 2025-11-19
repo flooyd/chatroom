@@ -374,7 +374,7 @@
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.9), rgba(8, 8, 12, 0.85));
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
-		border-radius: 24px;
+		border-radius: 12px;
 		position: sticky;
 		padding: 8px;
 		top: 68px;
@@ -421,12 +421,12 @@
 
 	.users-grid::-webkit-scrollbar-track {
 		background: rgba(255, 255, 255, 0.05);
-		border-radius: 10px;
+		border-radius: 12px;
 	}
 
 	.users-grid::-webkit-scrollbar-thumb {
 		background: rgba(0, 212, 255, 0.3);
-		border-radius: 10px;
+		border-radius: 12px;
 	}
 
 	.users-grid::-webkit-scrollbar-thumb:hover {
@@ -545,7 +545,7 @@
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.9), rgba(8, 8, 12, 0.85));
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
-		border-radius: 24px;
+		border-radius: 12px;
 		overflow: hidden;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 60px rgba(0, 212, 255, 0.05);
 		animation: fadeIn 0.4s ease-out 0.1s backwards;
@@ -576,7 +576,7 @@
 
 	.messages-container::-webkit-scrollbar-thumb {
 		background: rgba(0, 212, 255, 0.3);
-		border-radius: 10px;
+		border-radius: 12px;
 	}
 
 	.messages-container::-webkit-scrollbar-thumb:hover {
@@ -692,7 +692,7 @@
 		background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 170, 0.1));
 		backdrop-filter: blur(10px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
-		border-radius: 18px 18px 18px 4px;
+		border-radius: 12px 12px 12px 4px;
 		padding: 12px 16px;
 		max-width: 100%;
 		word-wrap: break-word;
@@ -703,7 +703,7 @@
 	.message-wrapper.own .bubble-content {
 		background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 200, 100, 0.1));
 		border-color: rgba(0, 255, 136, 0.3);
-		border-radius: 18px 18px 4px 18px;
+		border-radius: 12px 12px 4px 12px;
 	}
 
 	.bubble-content:hover {
@@ -851,7 +851,7 @@
 		padding: 8px;
 		background: rgba(255, 255, 255, 0.05);
 		border: 2px solid rgba(0, 212, 255, 0.3);
-		border-radius: 24px;
+		border-radius: 12px;
 		color: white;
 		font-size: 0.95rem;
 		transition: all 0.3s;
@@ -872,10 +872,13 @@
 		padding: 8px;
 		background: linear-gradient(135deg, #00d4ff, #00ffaa);
 		border: none;
-		border-radius: 24px;
+		border-radius: 12px;
 		color: white;
 		font-weight: 600;
 		font-size: 0.95rem;
+		min-width: 48px;
+		display: flex;
+		justify-content: center;
 		cursor: pointer;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		display: flex;

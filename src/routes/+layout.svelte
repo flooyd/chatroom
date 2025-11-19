@@ -226,8 +226,8 @@
 		color: rgba(255, 255, 255, 0.8);
 		font-weight: 600;
 		font-size: 0.95rem;
-		padding: 8px;
-		border-radius: 8px;
+		padding: 12px;
+		border-radius: 12px;
 		transition: all 0.2s;
 	}
 
@@ -254,7 +254,7 @@
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.98), rgba(8, 8, 12, 0.96));
 		backdrop-filter: blur(30px);
 		border: 1px solid rgba(0, 212, 255, 0.4);
-		border-radius: 24px;
+		border-radius: 12px;
 		box-shadow:
 			0 20px 60px rgba(0, 0, 0, 0.7),
 			0 0 100px rgba(0, 212, 255, 0.1);
@@ -278,7 +278,7 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		border-radius: 24px;
+		border-radius: 12px;
 		padding: 1px;
 		background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 255, 136, 0.2));
 		-webkit-mask:
@@ -310,7 +310,7 @@
 		color: #ff3e00;
 		padding: 8px;
 		font-size: 1.2rem;
-		border-radius: 8px;
+		border-radius: 12px;
 		transition: all 0.2s;
 	}
 
