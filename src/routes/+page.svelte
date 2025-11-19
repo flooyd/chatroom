@@ -173,41 +173,6 @@
 
 {#if data.user && data.user.isVerified}
 	<div class="chat-layout">
-		<!-- Floating Users Panel -->
-		<aside class="users-panel">
-			<div class="panel-header">
-				<h2>
-					<span class="header-icon">👥</span>
-					Online ({$onlineUsers.length})
-				</h2>
-			</div>
-			
-			{#if data.users && data.users.length > 0}
-				<div class="users-grid">
-					{#each data.users as user}
-						<div class="user-card" class:online={isUserOnline(user.username)}>
-							<div class="user-avatar-wrapper">
-								{#if user.profilePictureUrl}
-									<img src={user.profilePictureUrl} alt="{user.username}" class="user-avatar" />
-								{:else}
-									<div class="user-avatar-placeholder">
-										{user.username.charAt(0).toUpperCase()}
-									</div>
-								{/if}
-								<div class="status-pulse" class:active={isUserOnline(user.username)}></div>
-							</div>
-						<div class="user-info">
-							<span class="username" class:claude={user.username === 'claude'} class:current-user={data.user && user.username === data.user.username}>{user.username}</span>
-							{#if !isUserOnline(user.username)}
-								<span class="last-seen">{formatLastOnline(user.lastOnlineTime)}</span>
-							{/if}
-						</div>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</aside>
-
 		<!-- Main Chat Area -->
 		<main class="chat-main">
 			<div class="messages-wrapper">
@@ -361,181 +326,11 @@
 
 	/* Chat Layout */
 	.chat-layout {
-		display: grid;
-		grid-template-columns: 280px 1fr;
-		gap: 24px;
+		display: flex;
+		flex-direction: column;
 		height: calc(100vh - 160px);
 		margin-top: 20px;
 		position: relative;
-	}
-
-	/* Users Panel */
-	.users-panel {
-		background: linear-gradient(135deg, rgba(12, 12, 18, 0.9), rgba(8, 8, 12, 0.85));
-		backdrop-filter: blur(20px);
-		border: 1px solid rgba(0, 212, 255, 0.3);
-		border-radius: 12px;
-		position: sticky;
-		padding: 8px;
-		top: 68px;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 60px rgba(0, 212, 255, 0.05);
-		animation: fadeIn 0.4s ease-out;
-		height: fit-content;
-	}
-
-	.panel-header {
-		margin-bottom: 16px;
-		padding-bottom: 16px;
-		border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-	}
-
-	.panel-header h2 {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: #00d4ff;
-		margin: 0;
-	}
-
-	.header-icon {
-		font-size: 1.3rem;
-		filter: drop-shadow(0 2px 4px rgba(0, 212, 255, 0.3));
-	}
-
-	.users-grid {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		overflow-y: auto;
-		padding-right: 8px;
-	}
-
-	.users-grid::-webkit-scrollbar {
-		width: 6px;
-	}
-
-	.users-grid::-webkit-scrollbar-track {
-		background: rgba(255, 255, 255, 0.05);
-		border-radius: 12px;
-	}
-
-	.users-grid::-webkit-scrollbar-thumb {
-		background: rgba(0, 212, 255, 0.3);
-		border-radius: 12px;
-	}
-
-	.users-grid::-webkit-scrollbar-thumb:hover {
-		background: rgba(0, 212, 255, 0.5);
-	}
-
-	.user-card {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 8px;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 12px;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		cursor: pointer;
-	}
-
-	.user-card:hover {
-		background: rgba(0, 212, 255, 0.12);
-		border-color: rgba(0, 212, 255, 0.3);
-		transform: translateX(4px);
-	}
-
-	.user-card.online {
-		border-color: rgba(0, 255, 136, 0.3);
-	}
-
-	.user-avatar-wrapper {
-		position: relative;
-		flex-shrink: 0;
-	}
-
-	.user-avatar-placeholder,
-	.user-avatar {
-		width: 64px;
-		height: 64px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: white;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		border: 2px solid rgba(0, 212, 255, 0.4);
-		object-fit: cover;
-	}
-
-	.status-pulse {
-		position: absolute;
-		bottom: 2px;
-		right: 2px;
-		width: 12px;
-		height: 12px;
-		background: #ff3e00;
-		border-radius: 50%;
-		border: 2px solid black;
-		transition: all 0.3s;
-	}
-
-	.status-pulse.active {
-		background: #00ff88;
-		box-shadow: 0 0 0 0 rgba(0, 255, 136, 1);
-		animation: pulse 2s infinite;
-	}
-
-	@keyframes pulse {
-		0% {
-			box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
-		}
-		70% {
-			box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
-		}
-		100% {
-			box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
-		}
-	}
-
-	.user-info {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.username {
-		display: block;
-		font-weight: 600;
-		color: white;
-		font-size: 0.95rem;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.username.claude {
-		color: #a855f7;
-		font-weight: 700;
-	}
-
-	.username.current-user {
-		color: #10b981;
-		font-weight: 700;
-	}
-
-	.last-seen {
-		display: block;
-		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.5);
-		margin-top: 2px;
 	}
 
 	/* Chat Main */
@@ -937,47 +732,90 @@
 	/* Responsive */
 	@media (max-width: 968px) {
 		.chat-layout {
-			grid-template-columns: 1fr;
-			height: auto;
-			gap: 16px;
-		}
-
-		.users-panel {
-			position: relative;
-			top: 0;
-			max-height: 200px;
+			height: 100vh;
+			height: 100dvh;
+			margin-top: 0;
+			padding: 16px;
 		}
 
 		.chat-main {
-			max-height: calc(100vh - 356px);
+			height: 100%;
+			min-height: unset;
+		}
+
+		.messages-container {
+			padding: 16px;
 		}
 
 		.message-bubble {
 			max-width: 85%;
 		}
+
+		.message-input-form {
+			padding: 16px;
+		}
 	}
 
 	@media (max-width: 600px) {
-		.message-input-form {
-			gap: 8px;
+		.chat-layout {
+			padding: 12px;
 		}
 
 		.chat-main {
-			max-height: calc(100vh - 316px);
+			height: 100%;
+		}
+
+		.messages-container {
+			padding: 12px;
+			gap: 12px;
+		}
+
+		.message-input-form {
+			padding: 12px;
+			gap: 8px;
+			flex-direction: row;
+		}
+
+		.chat-input {
+			flex: 1;
+			font-size: 16px;
 		}
 
 		.send-btn {
-			width: 50px;
-			justify-content: center;
+			width: 44px;
+			height: 44px;
+			font-size: 1.1rem;
 		}
 
-		.user-avatar,
-		.user-avatar-placeholder,
 		.msg-avatar,
 		.msg-avatar-placeholder {
 			width: 40px;
 			height: 40px;
 			font-size: 1rem;
+		}
+
+		.message-bubble {
+			max-width: 90%;
+		}
+
+		.bubble-header {
+			gap: 6px;
+		}
+
+		.bubble-username {
+			font-size: 0.8rem;
+		}
+
+		.message-id-note {
+			font-size: 0.65rem;
+		}
+
+		.bubble-time {
+			font-size: 0.65rem;
+		}
+
+		.bubble-text {
+			font-size: 0.9rem;
 		}
 	}
 </style>

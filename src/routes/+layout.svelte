@@ -12,6 +12,7 @@
 	let showLoginModal = $state(false);
 	let loginOrRegister = $state('Login');
 	let errorMessage = $state('');
+	let menuOpen = $state(false);
 
 	// Sync state with data prop changes (e.g., after logout)
 	$effect(() => {
@@ -61,19 +62,34 @@
 </script>
 
 <nav>
-	<a class="title" href="/" onclick={() => (showLoginModal = false)}>
+	<a class="title" href="/" onclick={() => { showLoginModal = false; menuOpen = false; }}>
 		<img src="/chatroomhouse.png" alt="Chatroom" class="nav-logo" />
 		{title}
 	</a>
 	<div class="section-right">
-		<a href="/about" onclick={() => (showLoginModal = false)}>About</a>
 		{#if loggedIn}
-			<a href="/profile" onclick={() => (showLoginModal = false)}>{username}</a>
-		{:else}
-			<button onclick={openLoginModal}>Login</button>
+			<a href="/profile" class="nav-username" onclick={() => menuOpen = false}>{username}</a>
 		{/if}
+		<button class="hamburger" class:open={menuOpen} onclick={() => menuOpen = !menuOpen} aria-label="Menu">
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
 	</div>
 </nav>
+
+{#if menuOpen}
+	<div class="menu-overlay" onclick={() => menuOpen = false}></div>
+	<div class="menu-dropdown" class:open={menuOpen}>
+		<a href="/about" onclick={() => menuOpen = false}>About</a>
+		<a href="/users" onclick={() => menuOpen = false}>Users</a>
+		{#if loggedIn}
+			<a href="/profile" onclick={() => menuOpen = false}>Profile</a>
+		{:else}
+			<button onclick={() => { openLoginModal(); menuOpen = false; }}>Login</button>
+		{/if}
+	</div>
+{/if}
 
 {@render children()}
 
@@ -222,22 +238,112 @@
 		gap: 16px;
 	}
 
-	.section-right a {
-		color: rgba(255, 255, 255, 0.8);
+	.nav-username {
+		color: #00ff88;
 		font-weight: 600;
 		font-size: 0.95rem;
-		padding: 12px;
+		padding: 8px 12px;
+		background: rgba(0, 255, 136, 0.1);
 		border-radius: 12px;
+		border: 1px solid rgba(0, 255, 136, 0.3);
 		transition: all 0.2s;
 	}
 
-	.section-right a:hover {
-		color: #00d4ff;
-		background: rgba(0, 212, 255, 0.1);
+	.nav-username:hover {
+		background: rgba(0, 255, 136, 0.2);
+		border-color: #00ff88;
+		transform: translateY(-2px);
 	}
 
-	.section-right button {
-		margin-left: 0;
+	.hamburger {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		background: none;
+		border: none;
+		padding: 8px;
+		cursor: pointer;
+		z-index: 2001;
+		transition: all 0.3s;
+	}
+
+	.hamburger span {
+		display: block;
+		width: 24px;
+		height: 2px;
+		background: white;
+		border-radius: 2px;
+		transition: all 0.3s;
+	}
+
+	.hamburger:hover span {
+		background: #00d4ff;
+	}
+
+	.hamburger.open span:nth-child(1) {
+		transform: translateY(7px) rotate(45deg);
+	}
+
+	.hamburger.open span:nth-child(2) {
+		opacity: 0;
+	}
+
+	.hamburger.open span:nth-child(3) {
+		transform: translateY(-7px) rotate(-45deg);
+	}
+
+	.menu-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 1999;
+		animation: fadeIn 0.3s;
+	}
+
+	@keyframes fadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	.menu-dropdown {
+		position: fixed;
+		top: 80px;
+		right: 16px;
+		background: linear-gradient(135deg, rgba(12, 12, 18, 0.98), rgba(8, 8, 12, 0.96));
+		backdrop-filter: blur(30px);
+		border: 1px solid rgba(0, 212, 255, 0.4);
+		border-radius: 16px;
+		padding: 12px;
+		min-width: 200px;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 60px rgba(0, 212, 255, 0.1);
+		z-index: 2000;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.menu-dropdown a,
+	.menu-dropdown button {
+		color: rgba(255, 255, 255, 0.8);
+		font-weight: 600;
+		font-size: 0.95rem;
+		padding: 12px 16px;
+		border-radius: 12px;
+		transition: all 0.2s;
+		text-align: left;
+		background: none;
+		border: none;
+		cursor: pointer;
+		width: 100%;
+		display: block;
+	}
+
+	.menu-dropdown a:hover,
+	.menu-dropdown button:hover {
+		color: #00d4ff;
+		background: rgba(0, 212, 255, 0.1);
+		transform: translateX(4px);
 	}
 
 	/* Add padding to body to account for fixed nav */
@@ -443,9 +549,15 @@
 			width: auto;
 		}
 
-		.section-right a {
+		.nav-username {
 			font-size: 0.85rem;
-			padding: 8px;
+			padding: 6px 10px;
+		}
+
+		.menu-dropdown {
+			top: 60px;
+			right: 8px;
+			min-width: 180px;
 		}
 
 		.modal {
