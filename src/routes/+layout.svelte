@@ -161,6 +161,8 @@
 		top: 0;
 		left: 0;
 		right: 0;
+		margin-left: -20px;
+		margin-right: -20px;
 		background: linear-gradient(135deg, rgba(10, 10, 15, 0.98), rgba(15, 15, 20, 0.95));
 		backdrop-filter: blur(20px);
 		border-bottom: 1px solid rgba(0, 212, 255, 0.2);
@@ -169,7 +171,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 16px 40px;
+		padding: 16px;
 		animation: slideDown 0.3s ease-out;
 	}
 
@@ -306,7 +308,7 @@
 		background: rgba(255, 62, 0, 0.1);
 		border: 1px solid rgba(255, 62, 0, 0.3);
 		color: #ff3e00;
-		padding: 4px 12px;
+		padding: 8px;
 		font-size: 1.2rem;
 		border-radius: 8px;
 		transition: all 0.2s;
@@ -332,7 +334,7 @@
 	}
 
 	.modal form input {
-		padding: 12px 16px;
+		padding: 8px;
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
@@ -351,7 +353,7 @@
 	.modal form button {
 		align-self: flex-end;
 		margin-top: 8px;
-		padding: 12px 28px;
+		padding: 8px;
 		background: linear-gradient(135deg, #00d4ff, #00ffaa);
 		border: none;
 		box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
@@ -372,7 +374,7 @@
 		border: none;
 		color: #00d4ff;
 		text-decoration: none;
-		padding: 0;
+		padding: 5px;
 		cursor: pointer;
 		font-weight: 600;
 		box-shadow: none;
@@ -429,7 +431,7 @@
 		}
 
 		nav {
-			padding: 12px 20px;
+			padding: 8px;
 		}
 
 		nav .title {
