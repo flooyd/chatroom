@@ -311,7 +311,6 @@
 						class="chat-input"
 					/>
 					<button type="submit" disabled={!messageText.trim()} class="send-btn">
-						<span class="btn-text">Send</span>
 						<span class="btn-icon">→</span>
 					</button>
 				</form>
@@ -376,16 +375,15 @@
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		border-radius: 24px;
-		padding: 20px;
 		position: sticky;
-		top: 80px;
-		height: fit-content;
-		max-height: calc(100vh - 120px);
+		padding: 8px;
+		top: 68px;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 60px rgba(0, 212, 255, 0.05);
 		animation: fadeIn 0.4s ease-out;
+		height: fit-content;
 	}
 
 	.panel-header {
@@ -439,7 +437,7 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		padding: 12px;
+		padding: 8px;
 		background: rgba(255, 255, 255, 0.03);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 12px;
@@ -561,7 +559,6 @@
 	}
 
 	.messages-container {
-		flex: 1;
 		overflow-y: auto;
 		padding: 24px;
 		display: flex;
@@ -837,20 +834,21 @@
 
 	/* Input Area */
 	.input-area {
-		padding: 20px 24px;
+		padding: 8px;
 		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
 		border-top: 1px solid rgba(0, 212, 255, 0.15);
 	}
 
 	.message-input-form {
 		display: flex;
-		gap: 12px;
+		gap: 8px;
 		align-items: center;
+		justify-content: space-between;
 	}
 
 	.chat-input {
 		flex: 1;
-		padding: 14px 20px;
+		padding: 8px;
 		background: rgba(255, 255, 255, 0.05);
 		border: 2px solid rgba(0, 212, 255, 0.3);
 		border-radius: 24px;
@@ -871,7 +869,7 @@
 	}
 
 	.send-btn {
-		padding: 14px 28px;
+		padding: 8px;
 		background: linear-gradient(135deg, #00d4ff, #00ffaa);
 		border: none;
 		border-radius: 24px;
@@ -948,7 +946,7 @@
 		}
 
 		.chat-main {
-			min-height: 500px;
+			max-height: calc(100vh - 456px);
 		}
 
 		.message-bubble {
@@ -958,16 +956,15 @@
 
 	@media (max-width: 600px) {
 		.message-input-form {
-			flex-direction: column;
 			gap: 8px;
 		}
 
-		.chat-input {
-			width: 100%;
+		.chat-main {
+			max-height: calc(100vh - 416px);
 		}
 
 		.send-btn {
-			width: 100%;
+			width: 50px;
 			justify-content: center;
 		}
 
