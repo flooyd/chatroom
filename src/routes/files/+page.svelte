@@ -8,6 +8,10 @@
 	let uploadSuccess = $state(false);
 	let selectedFile = $state<File | null>(null);
 	let expandedDocument = $state<number | null>(null);
+	let ragPrompt = $state('');
+	let ragResponse = $state('');
+	let isRagLoading = $state(false);
+	let ragError = $state('');
 
 	function handleFileSelect(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -43,6 +47,36 @@
 
 	function toggleExpand(id: number) {
 		expandedDocument = expandedDocument === id ? null : id;
+	}
+
+	async function handleRagQuery() {
+		if (!ragPrompt.trim() || data.documents.length === 0) return;
+
+		isRagLoading = true;
+		ragError = '';
+		ragResponse = '';
+
+		try {
+			const response = await fetch('/api/rag', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ prompt: ragPrompt })
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				ragError = result.error || 'Failed to get response';
+				return;
+			}
+
+			ragResponse = result.response;
+		} catch (error) {
+			console.error('RAG error:', error);
+			ragError = 'An error occurred while processing your request';
+		} finally {
+			isRagLoading = false;
+		}
 	}
 </script>
 
@@ -174,6 +208,49 @@
 				</div>
 			{/if}
 		</div>
+
+		<!-- RAG Section -->
+		{#if data.documents.length > 0}
+			<div class="rag-section">
+				<h2>RAG - Ask Questions About Your Documents</h2>
+				<p class="rag-description">
+					Ask Claude AI questions and it will answer based on all {data.documents.length} of your uploaded documents.
+				</p>
+				
+				<div class="rag-input-wrapper">
+					<textarea
+						bind:value={ragPrompt}
+						placeholder="Ask a question about your documents..."
+						class="rag-input"
+						rows="3"
+						disabled={isRagLoading}
+					></textarea>
+					<button 
+						onclick={handleRagQuery}
+						disabled={!ragPrompt.trim() || isRagLoading}
+						class="rag-btn"
+					>
+						{isRagLoading ? '🤔 Thinking...' : '🤖 Ask Claude'}
+					</button>
+				</div>
+
+				{#if ragError}
+					<div class="rag-error">{ragError}</div>
+				{/if}
+
+				{#if ragResponse}
+					<div class="rag-response">
+						<div class="response-header">
+							<span class="response-icon">🤖</span>
+							<span class="response-label">Claude's Response:</span>
+						</div>
+						<div class="response-content">
+							{ragResponse}
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	{:else}
 		<p class="auth-message">Please log in to manage your files.</p>
 	{/if}
@@ -461,6 +538,126 @@
 		font-size: 1.1rem;
 		text-align: center;
 		padding: 40px;
+	}
+
+	.rag-section {
+		background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(139, 92, 246, 0.1));
+		backdrop-filter: blur(20px);
+		border: 1px solid rgba(168, 85, 247, 0.3);
+		border-radius: 20px;
+		padding: 32px;
+		margin-top: 40px;
+		box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);
+	}
+
+	.rag-description {
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 0.95rem;
+		margin-bottom: 24px;
+	}
+
+	.rag-input-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		margin-bottom: 24px;
+	}
+
+	.rag-input {
+		width: 100%;
+		padding: 16px;
+		background: rgba(255, 255, 255, 0.05);
+		border: 2px solid rgba(168, 85, 247, 0.3);
+		border-radius: 16px;
+		color: white;
+		font-size: 1rem;
+		font-family: inherit;
+		resize: vertical;
+		transition: all 0.3s;
+		min-height: 80px;
+	}
+
+	.rag-input::placeholder {
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	.rag-input:focus {
+		outline: none;
+		background: rgba(255, 255, 255, 0.08);
+		border-color: #a855f7;
+		box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+	}
+
+	.rag-input:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.rag-btn {
+		padding: 14px 32px;
+		background: linear-gradient(135deg, #a855f7, #8b5cf6);
+		border: none;
+		border-radius: 16px;
+		color: white;
+		font-weight: 600;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: all 0.3s;
+		box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+		align-self: flex-start;
+	}
+
+	.rag-btn:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 24px rgba(168, 85, 247, 0.4);
+	}
+
+	.rag-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+	.rag-error {
+		color: #ff3e00;
+		background: rgba(255, 62, 0, 0.1);
+		padding: 12px 16px;
+		border-radius: 12px;
+		border: 1px solid rgba(255, 62, 0, 0.3);
+	}
+
+	.rag-response {
+		background: rgba(168, 85, 247, 0.1);
+		border: 1px solid rgba(168, 85, 247, 0.3);
+		border-radius: 16px;
+		padding: 24px;
+		margin-top: 24px;
+	}
+
+	.response-header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+	}
+
+	.response-icon {
+		font-size: 1.5rem;
+	}
+
+	.response-label {
+		font-weight: 600;
+		color: #a855f7;
+		font-size: 1.1rem;
+	}
+
+	.response-content {
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 1rem;
+		line-height: 1.6;
+		white-space: pre-wrap;
 	}
 
 	@media (max-width: 768px) {
