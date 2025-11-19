@@ -277,7 +277,7 @@
 		flex: 1 1 auto;
 		min-width: 200px;
 		max-width: 100%;
-		padding: 14px 18px;
+		padding: 8px;
 		border: 2px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
 		background: rgba(255, 255, 255, 0.05);
