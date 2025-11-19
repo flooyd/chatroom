@@ -157,7 +157,7 @@
 
 <style>
 	nav {
-		position: fixed;
+		position: sticky;
 		top: 0;
 		left: 0;
 		right: 0;
@@ -240,7 +240,7 @@
 
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
-		padding-top: 100px;
+		
 	}
 
 	.modal {
@@ -426,7 +426,6 @@
 
 	@media (max-width: 600px) {
 		:global(body) {
-			padding-top: 68px;
 		}
 
 		nav {

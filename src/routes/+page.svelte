@@ -942,11 +942,11 @@
 		.users-panel {
 			position: relative;
 			top: 0;
-			max-height: 300px;
+			max-height: 200px;
 		}
 
 		.chat-main {
-			max-height: calc(100vh - 456px);
+			max-height: calc(100vh - 356px);
 		}
 
 		.message-bubble {
@@ -960,7 +960,7 @@
 		}
 
 		.chat-main {
-			max-height: calc(100vh - 416px);
+			max-height: calc(100vh - 316px);
 		}
 
 		.send-btn {
