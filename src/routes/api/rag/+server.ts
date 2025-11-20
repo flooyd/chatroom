@@ -55,7 +55,7 @@ ${combinedContext}`;
 			messages: [
 				{
 					role: 'user',
-					content: `${systemPrompt}\n\nUser question: ${prompt}`
+					content: `${systemPrompt}\n\nUser question(s): ${prompt}`
 				}
 			]
 		});
