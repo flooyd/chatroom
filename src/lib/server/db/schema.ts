@@ -28,3 +28,11 @@ export const documents = pgTable('documents', {
 	content: text('content').notNull(),
 	uploadedAt: timestamp('uploaded_at').notNull().defaultNow(),
 });
+
+export const reactions = pgTable('reactions', {
+	id: serial('id').primaryKey(),
+	messageId: serial('message_id').notNull().references(() => messages.id, { onDelete: 'cascade' }),
+	username: text('username').notNull(),
+	type: text('type').notNull(), // e.g., 'like', 'love', etc.
+	createdAt: timestamp('created_at').notNull().defaultNow(),
+});

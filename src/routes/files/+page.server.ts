@@ -106,5 +106,59 @@ export const actions: Actions = {
 			console.error('Delete error:', error);
 			return fail(500, { error: 'Failed to delete document' });
 		}
+	},
+
+	edit: async ({ request, cookies }) => {
+		const sessionId = cookies.get('session');
+		if (!sessionId) {
+			return fail(401, { error: 'Not authenticated' });
+		}
+
+		const userId = parseInt(sessionId);
+
+		const formData = await request.formData();
+		const documentId = Number(formData.get('documentId'));
+		const content = formData.get('content') as string;
+
+		if (!documentId) {
+			return fail(400, { error: 'No document ID provided' });
+		}
+
+		if (!content) {
+			return fail(400, { error: 'Content cannot be empty' });
+		}
+
+		// Validate content size (limit to 10MB)
+		if (new Blob([content]).size > 10 * 1024 * 1024) {
+			return fail(400, { error: 'Content size must be less than 10MB' });
+		}
+
+		try {
+			// Verify the document belongs to the user before editing
+			const [document] = await db
+				.select()
+				.from(documents)
+				.where(eq(documents.id, documentId))
+				.limit(1);
+
+			if (!document) {
+				return fail(404, { error: 'Document not found' });
+			}
+
+			if (document.userId !== userId) {
+				return fail(403, { error: 'You can only edit your own documents' });
+			}
+
+			// Update the document
+			await db
+				.update(documents)
+				.set({ content: content })
+				.where(eq(documents.id, documentId));
+
+			return { success: true };
+		} catch (error) {
+			console.error('Edit error:', error);
+			return fail(500, { error: 'Failed to edit document' });
+		}
 	}
 };

@@ -7,7 +7,9 @@
 	let uploadError = $state('');
 	let uploadSuccess = $state(false);
 	let selectedFile = $state<File | null>(null);
-	let expandedDocument = $state<number | null>(null);
+	let expandedDocuments = $state<Set<number>>(new Set());
+	let editingDocument = $state<number | null>(null);
+	let editContent = $state<Record<number, string>>({});
 	let ragPrompt = $state('');
 	let ragResponse = $state('');
 	let isRagLoading = $state(false);
@@ -46,7 +48,36 @@
 	}
 
 	function toggleExpand(id: number) {
-		expandedDocument = expandedDocument === id ? null : id;
+		if (expandedDocuments.has(id)) {
+			expandedDocuments.delete(id);
+		} else {
+			expandedDocuments.add(id);
+		}
+		expandedDocuments = new Set(expandedDocuments);
+	}
+
+	function startEdit(doc: any) {
+		// Open the document if not already open
+		if (!expandedDocuments.has(doc.id)) {
+			expandedDocuments.add(doc.id);
+			expandedDocuments = new Set(expandedDocuments);
+		}
+		editingDocument = doc.id;
+		editContent[doc.id] = doc.content;
+	}
+
+	function cancelEdit() {
+		editingDocument = null;
+	}
+
+	function downloadDocument(doc: any) {
+		const blob = new Blob([doc.content], { type: 'text/plain' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = doc.filename;
+		a.click();
+		URL.revokeObjectURL(url);
 	}
 
 	async function handleRagQuery() {
@@ -171,11 +202,27 @@
 								</div>
 								<div class="document-actions">
 									<button 
-										class="expand-btn"
-										onclick={() => toggleExpand(doc.id)}
-										title={expandedDocument === doc.id ? "Collapse" : "Expand"}
+										class="action-btn download-btn"
+										onclick={() => downloadDocument(doc)}
+										title="Download"
 									>
-										{expandedDocument === doc.id ? '▲' : '▼'}
+										💾
+									</button>
+									{#if editingDocument !== doc.id}
+										<button 
+											class="action-btn edit-btn"
+											onclick={() => startEdit(doc)}
+											title="Edit"
+										>
+											✏️
+										</button>
+									{/if}
+									<button 
+										class="action-btn expand-btn"
+										onclick={() => toggleExpand(doc.id)}
+										title={expandedDocuments.has(doc.id) ? "Collapse" : "Expand"}
+									>
+										{expandedDocuments.has(doc.id) ? '▲' : '▼'}
 									</button>
 									<form 
 										method="POST" 
@@ -185,7 +232,7 @@
 										<input type="hidden" name="documentId" value={doc.id} />
 										<button 
 											type="submit" 
-											class="delete-btn"
+											class="action-btn delete-btn"
 											onclick={(e) => {
 												if (!confirm('Are you sure you want to delete this document?')) {
 													e.preventDefault();
@@ -198,9 +245,35 @@
 								</div>
 							</div>
 							
-							{#if expandedDocument === doc.id}
+							{#if expandedDocuments.has(doc.id)}
 								<div class="document-content">
-									<pre>{doc.content}</pre>
+									{#if editingDocument === doc.id}
+										<form 
+											method="POST" 
+											action="?/edit"
+											use:enhance={() => {
+												return async ({ result, update }) => {
+													if (result.type === 'success') {
+														editingDocument = null;
+													}
+													await update();
+												};
+											}}
+										>
+											<input type="hidden" name="documentId" value={doc.id} />
+											<textarea 
+												name="content"
+												bind:value={editContent[doc.id]}
+												class="edit-textarea"
+											></textarea>
+											<div class="edit-actions">
+												<button type="submit" class="save-btn">💾 Save Changes</button>
+												<button type="button" class="cancel-btn" onclick={cancelEdit}>❌ Cancel</button>
+											</div>
+										</form>
+									{:else}
+										<pre>{doc.content}</pre>
+									{/if}
 								</div>
 							{/if}
 						</div>
@@ -456,8 +529,7 @@
 		gap: 8px;
 	}
 
-	.expand-btn,
-	.delete-btn {
+	.action-btn {
 		padding: 8px 12px;
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.1);
@@ -465,6 +537,16 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		font-size: 1rem;
+	}
+
+	.download-btn:hover {
+		background: rgba(0, 255, 136, 0.2);
+		border-color: #00ff88;
+	}
+
+	.edit-btn:hover {
+		background: rgba(255, 193, 7, 0.2);
+		border-color: #ffc107;
 	}
 
 	.expand-btn:hover {
@@ -475,6 +557,61 @@
 	.delete-btn:hover {
 		background: rgba(255, 62, 0, 0.2);
 		border-color: #ff3e00;
+	}
+
+	.edit-textarea {
+		width: 100%;
+		min-height: 300px;
+		padding: 12px;
+		background: rgba(0, 0, 0, 0.5);
+		border: 2px solid rgba(255, 193, 7, 0.3);
+		border-radius: 12px;
+		color: white;
+		font-family: 'Courier New', monospace;
+		font-size: 0.9rem;
+		resize: vertical;
+		margin-bottom: 12px;
+	}
+
+	.edit-textarea:focus {
+		outline: none;
+		border-color: #ffc107;
+		box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+	}
+
+	.edit-actions {
+		display: flex;
+		gap: 12px;
+	}
+
+	.save-btn,
+	.cancel-btn {
+		padding: 10px 20px;
+		border: none;
+		border-radius: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.save-btn {
+		background: linear-gradient(135deg, #00ff88, #00d4ff);
+		color: white;
+	}
+
+	.save-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+	}
+
+	.cancel-btn {
+		background: rgba(255, 62, 0, 0.2);
+		color: #ff3e00;
+		border: 1px solid rgba(255, 62, 0, 0.3);
+	}
+
+	.cancel-btn:hover {
+		background: rgba(255, 62, 0, 0.3);
 	}
 
 	.document-content {
