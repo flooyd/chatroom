@@ -547,9 +547,9 @@
 
 	.message-actions {
 		display: flex;
-		flex-direction: column;
-		gap: 6px;
-		margin-bottom: 6px;
+		gap: 8px;
+		padding-bottom: 8px;
+		align-items: center;
 	}
 
 	.ai-respond-btn,
