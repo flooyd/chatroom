@@ -1,51 +1,54 @@
 <script lang="ts">
 	import { onlineUsers } from '$lib/stores/socket';
 	import { messages, sendMessage } from '$lib/stores/messages';
-	
-	const title = "The Chat Room";
-	
+
+	const title = 'The Chat Room';
+
 	let { data } = $props();
 	let messageText = $state('');
 	let messagesContainer = $state<HTMLDivElement>();
 	let hoveredMessageId = $state<number | null>(null);
 	let isAiResponding = $state(false);
-	
+
 	// Create a map of username to profile picture for quick lookup
 	const userProfilePics = $derived(
-		data.users?.reduce((acc, user) => {
-			acc[user.username] = user.profilePictureUrl;
-			return acc;
-		}, {} as Record<string, string | null>) || {}
+		data.users?.reduce(
+			(acc, user) => {
+				acc[user.username] = user.profilePictureUrl;
+				return acc;
+			},
+			{} as Record<string, string | null>
+		) || {}
 	);
-	
+
 	// Create a set of message IDs that have already been linked to
 	const linkedMessageIds = $derived(
-		new Set($messages.filter(m => m.linkToMessage).map(m => m.linkToMessage))
+		new Set($messages.filter((m) => m.linkToMessage).map((m) => m.linkToMessage))
 	);
-	
+
 	function isUserOnline(username: string): boolean {
 		return $onlineUsers.includes(username);
 	}
-	
+
 	function isMessageLinked(messageId: number): boolean {
 		return linkedMessageIds.has(messageId);
 	}
 
 	function formatLastOnline(lastOnlineTime: Date | null): string {
 		if (!lastOnlineTime) return 'Never';
-		
+
 		const now = new Date();
 		const last = new Date(lastOnlineTime);
 		const diffMs = now.getTime() - last.getTime();
 		const diffMins = Math.floor(diffMs / 60000);
 		const diffHours = Math.floor(diffMs / 3600000);
 		const diffDays = Math.floor(diffMs / 86400000);
-		
+
 		if (diffMins < 1) return 'Just now';
 		if (diffMins < 60) return `${diffMins} min${diffMins === 1 ? '' : 's'} ago`;
 		if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
 		if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-		
+
 		return last.toLocaleDateString();
 	}
 
@@ -56,7 +59,7 @@
 
 	async function handleSendMessage() {
 		if (!messageText.trim() || !data.user) return;
-		
+
 		const success = await sendMessage(data.user.username, messageText);
 		if (success) {
 			messageText = '';
@@ -71,23 +74,23 @@
 
 	async function handleAiResponse(messageId: number) {
 		if (isAiResponding) return;
-		
+
 		isAiResponding = true;
 		hoveredMessageId = null;
-		
+
 		try {
 			const response = await fetch('/api/messages/ai-respond', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ messageId })
 			});
-			
+
 			const data = await response.json();
-			
+
 			if (!data.success) {
 				console.error('AI response failed:', data.error);
 			}
-			
+
 			// Scroll to bottom to show AI response
 			setTimeout(() => {
 				if (messagesContainer) {
@@ -103,18 +106,18 @@
 
 	async function handleDeleteMessage(messageId: number) {
 		if (!confirm('Are you sure you want to delete this message?')) return;
-		
+
 		hoveredMessageId = null;
-		
+
 		try {
 			const response = await fetch('/api/messages/delete', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ messageId })
 			});
-			
+
 			const result = await response.json();
-			
+
 			if (!result.success) {
 				console.error('Delete failed:', result.error);
 				alert('Failed to delete message');
@@ -137,20 +140,20 @@
 		if ($messages.length > 0 && messagesContainer) {
 			setTimeout(() => {
 				if (!messagesContainer) return;
-				
+
 				const linkLines = messagesContainer.querySelectorAll('.message-link-line');
 				linkLines.forEach((line) => {
 					const linkTo = line.getAttribute('data-link-to');
 					if (!linkTo || !messagesContainer) return;
-					
+
 					const wrapper = line.closest('.message-wrapper');
 					const targetWrapper = messagesContainer.querySelector(`[data-message-id="${linkTo}"]`);
-					
+
 					if (wrapper && targetWrapper) {
 						const wrapperRect = wrapper.getBoundingClientRect();
 						const targetRect = targetWrapper.getBoundingClientRect();
 						const height = wrapperRect.top - targetRect.bottom;
-						
+
 						if (height > 0) {
 							(line as HTMLElement).style.height = `${height}px`;
 						}
@@ -184,27 +187,29 @@
 							<span>Start the conversation!</span>
 						</div>
 					{:else}
-					{#each $messages as message (message.id)}
-						<div 
-							class="message-wrapper"
-							class:own={message.username === data.user.username}
-							class:has-link={message.linkToMessage}
-							role="article"
-							data-message-id={message.id}
-							onmouseenter={() => hoveredMessageId = message.id}
-							onmouseleave={() => hoveredMessageId = null}
-						>
+						{#each $messages as message (message.id)}
+							<div
+								class="message-wrapper"
+								class:own={message.username === data.user.username}
+								class:has-link={message.linkToMessage}
+								role="article"
+								data-message-id={message.id}
+								onmouseenter={() => (hoveredMessageId = message.id)}
+								onmouseleave={() => (hoveredMessageId = null)}
+							>
 								{#if message.linkToMessage}
 									<div class="message-link-line" data-link-to={message.linkToMessage}></div>
 								{/if}
-								
-								<div 
-									class="message-bubble"
-								>
+
+								<div class="message-bubble">
 									{#if message.username !== data.user.username}
 										<div class="message-avatar-container">
 											{#if userProfilePics[message.username]}
-												<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
+												<img
+													src={userProfilePics[message.username]}
+													alt={message.username}
+													class="msg-avatar"
+												/>
 											{:else}
 												<div class="msg-avatar-placeholder">
 													{message.username.charAt(0).toUpperCase()}
@@ -212,22 +217,30 @@
 											{/if}
 										</div>
 									{/if}
-									
-						<div class="bubble-content">
-							<div class="bubble-header">
-								<span class="bubble-username" class:claude={message.username === 'claude'}>{message.username}</span>
-								{#if message.username === 'claude' && message.linkToMessage}
-									<span class="message-id-note">responding to ID {message.linkToMessage}</span>
-								{:else if message.username !== 'claude'}
-									<span class="message-id-note">ID - {message.id}</span>
-								{/if}
-								<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
-							</div>
-								<div class="bubble-text">{message.text}</div>
-							</div>									{#if message.username === data.user.username}
+
+									<div class="bubble-content">
+										<div class="bubble-header">
+											<span class="bubble-username" class:claude={message.username === 'claude'}
+												>{message.username}</span
+											>
+											{#if message.username === 'claude' && message.linkToMessage}
+												<span class="message-id-note">responding to ID {message.linkToMessage}</span
+												>
+											{:else if message.username !== 'claude'}
+												<span class="message-id-note">ID - {message.id}</span>
+											{/if}
+											<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
+										</div>
+										<div class="bubble-text">{message.text}</div>
+									</div>
+									{#if message.username === data.user.username}
 										<div class="message-avatar-container">
 											{#if userProfilePics[message.username]}
-												<img src={userProfilePics[message.username]} alt="{message.username}" class="msg-avatar" />
+												<img
+													src={userProfilePics[message.username]}
+													alt={message.username}
+													class="msg-avatar"
+												/>
 											{:else}
 												<div class="msg-avatar-placeholder">
 													{message.username.charAt(0).toUpperCase()}
@@ -236,21 +249,33 @@
 										</div>
 									{/if}
 								</div>
-								
+
+								<div class="reactions">
+									<button
+										class="like-btn"
+										title="Like"
+										onclick={() => alert('Like feature coming soon!')}
+									>👍</button>
+								</div>
+
 								{#if hoveredMessageId === message.id}
 									<div class="message-actions">
 										{#if message.username !== 'claude'}
-											<button 
+											<button
 												class="ai-respond-btn"
 												onclick={() => handleAiResponse(message.id)}
 												disabled={isAiResponding || isMessageLinked(message.id)}
-												title={isMessageLinked(message.id) ? "AI already responded to this message" : isAiResponding ? "AI is responding..." : "Ask AI to respond (disabled)"}
+												title={isMessageLinked(message.id)
+													? 'AI already responded to this message'
+													: isAiResponding
+														? 'AI is responding...'
+														: 'Ask AI to respond (disabled)'}
 											>
 												🤖
 											</button>
 										{/if}
 										{#if data.user?.username === 'admin' || message.username === data.user?.username}
-											<button 
+											<button
 												class="delete-btn"
 												onclick={() => handleDeleteMessage(message.id)}
 												title="Delete message"
@@ -265,13 +290,19 @@
 					{/if}
 				</div>
 			</div>
-			
+
 			<div class="input-area">
-				<form class="message-input-form" onsubmit={(e) => { e.preventDefault(); handleSendMessage(); }}>
-					<input 
-						type="text" 
+				<form
+					class="message-input-form"
+					onsubmit={(e) => {
+						e.preventDefault();
+						handleSendMessage();
+					}}
+				>
+					<input
+						type="text"
 						bind:value={messageText}
-						placeholder="Type your message..." 
+						placeholder="Type your message..."
 						maxlength="500"
 						class="chat-input"
 					/>
@@ -342,7 +373,9 @@
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 60px rgba(0, 212, 255, 0.05);
+		box-shadow:
+			0 8px 32px rgba(0, 0, 0, 0.5),
+			0 0 60px rgba(0, 212, 255, 0.05);
 		animation: fadeIn 0.4s ease-out 0.1s backwards;
 	}
 
@@ -488,7 +521,7 @@
 		backdrop-filter: blur(10px);
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px 12px 12px 4px;
-		padding: 12px 16px;
+		padding: 8px;
 		max-width: 100%;
 		word-wrap: break-word;
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -619,7 +652,8 @@
 	}
 
 	@keyframes pulse-ai {
-		0%, 100% {
+		0%,
+		100% {
 			transform: scale(1);
 		}
 		50% {

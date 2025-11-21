@@ -8,37 +8,55 @@
 		<div class="feature-card">
 			<div class="card-icon">💬</div>
 			<h2>Real-time Messaging</h2>
-			<p>Experience instant communication with Socket.IO.</p>
+			<p>Experience instant communication with Socket.IO. Messages include unique IDs and Claude responses reference the message they're answering.</p>
+		</div>
+
+		<div class="feature-card">
+			<div class="card-icon">🤖</div>
+			<h2>AI-Powered Chat</h2>
+			<p>Chat with Claude (Sonnet 4.5) directly in the main room. The AI responds to user questions in real-time.</p>
 		</div>
 
 		<div class="feature-card">
 			<div class="card-icon">👥</div>
 			<h2>Live User Status</h2>
-			<p>See who's online in real-time with animated status indicators and last seen timestamps for offline users.</p>
+			<p>See who's online in real-time with animated status indicators, last seen timestamps, and a dedicated users page with profile cards.</p>
+		</div>
+
+		<div class="feature-card">
+			<div class="card-icon">📄</div>
+			<h2>File Manager</h2>
+			<p>Upload, edit, download, and delete .txt documents (up to 10MB). Documents are stored securely in PostgreSQL.</p>
+		</div>
+
+		<div class="feature-card">
+			<div class="card-icon">🔍</div>
+			<h2>RAG System</h2>
+			<p>Ask Claude questions about your uploaded documents. The AI analyzes all your files and provides contextual answers.</p>
 		</div>
 
 		<div class="feature-card">
 			<div class="card-icon">🎨</div>
 			<h2>Modern Design</h2>
-			<p>Built with cutting-edge UI featuring glassmorphism effects, smooth animations, and a sleek dark theme with cyan accents.</p>
+			<p>Sleek UI with glassmorphism effects, smooth animations, mobile-optimized layout with hamburger menu, and color-coded usernames.</p>
 		</div>
 
 		<div class="feature-card">
 			<div class="card-icon">🔐</div>
 			<h2>Secure Authentication</h2>
-			<p>User accounts with email verification, secure password hashing, and session-based authentication.</p>
+			<p>User accounts with email verification, Google OAuth, secure password hashing, and session-based authentication.</p>
 		</div>
 
 		<div class="feature-card">
 			<div class="card-icon">📱</div>
 			<h2>Responsive Layout</h2>
-			<p>Fully responsive design that works seamlessly across desktop, tablet, and mobile devices.</p>
+			<p>Fully responsive design that works seamlessly across desktop, tablet, and mobile devices with optimized touch interfaces.</p>
 		</div>
 
 		<div class="feature-card">
 			<div class="card-icon">⚡</div>
 			<h2>Built with Modern Tech</h2>
-			<p>Powered by SvelteKit 5, PostgreSQL with Drizzle ORM, and deployed on Render.</p>
+			<p>Powered by SvelteKit 5, Anthropic Claude API, PostgreSQL with Drizzle ORM, and deployed on Render.</p>
 		</div>
 	</div>
 
@@ -130,11 +148,14 @@
 	}
 
 	.feature-card:nth-child(1) { animation-delay: 0.1s; }
-	.feature-card:nth-child(2) { animation-delay: 0.2s; }
-	.feature-card:nth-child(3) { animation-delay: 0.3s; }
-	.feature-card:nth-child(4) { animation-delay: 0.4s; }
-	.feature-card:nth-child(5) { animation-delay: 0.5s; }
-	.feature-card:nth-child(6) { animation-delay: 0.6s; }
+	.feature-card:nth-child(2) { animation-delay: 0.15s; }
+	.feature-card:nth-child(3) { animation-delay: 0.2s; }
+	.feature-card:nth-child(4) { animation-delay: 0.25s; }
+	.feature-card:nth-child(5) { animation-delay: 0.3s; }
+	.feature-card:nth-child(6) { animation-delay: 0.35s; }
+	.feature-card:nth-child(7) { animation-delay: 0.4s; }
+	.feature-card:nth-child(8) { animation-delay: 0.45s; }
+	.feature-card:nth-child(9) { animation-delay: 0.5s; }
 
 	.feature-card:hover {
 		transform: translateY(-8px);
@@ -169,7 +190,7 @@
 		padding: 16px;
 		text-align: center;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-		animation: fadeIn 0.6s ease-out 0.7s backwards;
+		animation: fadeIn 0.6s ease-out 0.6s backwards;
 	}
 
 	.tech-section h2 {
