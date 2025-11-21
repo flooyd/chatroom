@@ -260,7 +260,7 @@
 
 								{#if hoveredMessageId === message.id}
 									<div class="message-actions">
-										{#if message.username !== 'claude'}
+										{#if message.username !== 'claude' && data.user?.username === 'admin'}
 											<button
 												class="ai-respond-btn"
 												onclick={() => handleAiResponse(message.id)}
@@ -269,7 +269,7 @@
 													? 'AI already responded to this message'
 													: isAiResponding
 														? 'AI is responding...'
-														: 'Ask AI to respond (disabled)'}
+														: 'Ask AI to respond'}
 											>
 												🤖
 											</button>
