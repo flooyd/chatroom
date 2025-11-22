@@ -189,117 +189,88 @@
 							data-message-id={message.id}
 							onmouseenter={() => (hoveredMessageId = message.id)}
 							onmouseleave={() => (hoveredMessageId = null)}
-						>								<div class="message-bubble">
-									{#if message.username !== data.user.username}
-										<div class="message-avatar-container">
-											{#if userProfilePics[message.username]}
-												<img
-													src={userProfilePics[message.username]}
-													alt={message.username}
-													class="msg-avatar"
-												/>
-											{:else}
-												<div class="msg-avatar-placeholder">
-													{message.username.charAt(0).toUpperCase()}
-												</div>
-											{/if}
-										</div>
-									{/if}
-
-									<div class="bubble-content">
-										<div class="bubble-header">
-											<span class="bubble-username" class:claude={message.username === 'claude'}
-												>{message.username}</span
-											>
-											{#if message.username === 'claude' && message.linkToMessage}
-												<span class="message-id-note">responding to ID {message.linkToMessage}</span
-												>
-											{:else if message.username !== 'claude'}
-												<span class="message-id-note">ID - {message.id}</span>
-											{/if}
-											<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
-										</div>
-										<div class="bubble-text">{message.text}</div>
-										
-										{#if message.reactions && message.reactions.length > 0}
-											<div class="message-reactions">
-												{#each message.reactions as reaction}
-													<button
-														class="reaction-badge"
-														class:user-reacted={userHasReacted(reaction, data.user?.username || '')}
-														onclick={() => handleReaction(message.id, reaction.type)}
-														title={reaction.users.join(', ')}
-													>
-														<span class="reaction-emoji">{reaction.type}</span>
-														<span class="reaction-count">{reaction.users.length}</span>
-													</button>
-												{/each}
-											</div>
-										{/if}
-									</div>
-									{#if message.username === data.user.username}
-										<div class="message-avatar-container">
-											{#if userProfilePics[message.username]}
-												<img
-													src={userProfilePics[message.username]}
-													alt={message.username}
-													class="msg-avatar"
-												/>
-											{:else}
-												<div class="msg-avatar-placeholder">
-													{message.username.charAt(0).toUpperCase()}
-												</div>
-											{/if}
-										</div>
+						>
+							<div class="message-row">
+								<div class="avatar-col">
+									{#if userProfilePics[message.username]}
+										<img src={userProfilePics[message.username]} alt={message.username} class="msg-avatar" />
+									{:else}
+										<div class="msg-avatar-placeholder">{message.username.charAt(0).toUpperCase()}</div>
 									{/if}
 								</div>
 
-								{#if hoveredMessageId === message.id}
-									<div class="message-actions">
-										<button
-											class="add-reaction-btn"
-											onclick={() => toggleReactionPicker(message.id)}
-											title="Add reaction"
-										>
-											😊+
-										</button>
-										
-										{#if message.username !== 'claude' && message.username === data.user?.username}
-											<button
-												class="ai-respond-btn"
-												onclick={() => handleAiResponse(message.id)}
-												disabled={isAiResponding}
-												title={isAiResponding ? 'AI is responding...' : 'Ask AI to respond'}
-											>
-												🤖
-											</button>
-										{/if}
-										{#if data.user?.username === 'admin' || message.username === data.user?.username}
-											<button
-												class="delete-btn"
-												onclick={() => handleDeleteMessage(message.id)}
-												title="Delete message"
-											>
-												🗑️
-											</button>
-										{/if}
+								<div class="message-content">
+									<div class="message-meta">
+										<span class="username" class:claude={message.username === 'claude'}>{message.username}</span>
+										<span class="message-id-note">ID - {message.id}</span>
+										<span class="meta-spacer"></span>
+										<span class="msg-time">{formatMessageTime(message.timestamp)}</span>
 									</div>
+									<div class="message-text">{message.text}</div>
 
-									{#if showReactionPicker === message.id}
-										<div class="reaction-picker">
-											{#each reactionEmojis as emoji}
+									{#if message.reactions && message.reactions.length > 0}
+										<div class="message-reactions compact">
+											{#each message.reactions as reaction}
 												<button
-													class="reaction-option"
-													onclick={() => handleReaction(message.id, emoji)}
+													class="reaction-badge"
+													class:user-reacted={userHasReacted(reaction, data.user?.username || '')}
+													onclick={() => handleReaction(message.id, reaction.type)}
+													title={reaction.users.join(', ')}
 												>
-													{emoji}
+													<span class="reaction-emoji">{reaction.type}</span>
+													<span class="reaction-count">{reaction.users.length}</span>
 												</button>
 											{/each}
 										</div>
 									{/if}
-								{/if}
+								</div>
 							</div>
-						{/each}
+
+							{#if hoveredMessageId === message.id}
+								<div class="message-actions">
+									{#if message.username !== 'claude' && message.username === data.user?.username}
+										<button
+											class="ai-respond-btn"
+											onclick={() => handleAiResponse(message.id)}
+											disabled={isAiResponding}
+											title={isAiResponding ? 'AI is responding...' : 'Ask AI to respond'}
+										>
+											🤖
+										</button>
+									{/if}
+									{#if data.user?.username === 'admin' || message.username === data.user?.username}
+										<button
+											class="delete-btn"
+											onclick={() => handleDeleteMessage(message.id)}
+											title="Delete message"
+										>
+											🗑️
+										</button>
+									{/if}
+									<button
+										class="add-reaction-btn"
+										onclick={() => (showReactionPicker = showReactionPicker === message.id ? null : message.id)}
+										title="Add reaction"
+									>
+										➕
+									</button>
+								</div>
+							{/if}
+
+							{#if showReactionPicker === message.id}
+								<div class="reaction-picker">
+									{#each reactionEmojis as emoji}
+										<button
+											class="reaction-option"
+											onclick={() => handleReaction(message.id, emoji)}
+										>
+											{emoji}
+										</button>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{/each}
 					{/if}
 				</div>
 			</div>
@@ -381,14 +352,9 @@
 	.chat-main {
 		display: flex;
 		flex-direction: column;
-		background: linear-gradient(135deg, rgba(12, 12, 18, 0.9), rgba(8, 8, 12, 0.85));
-		backdrop-filter: blur(20px);
-		border: 1px solid rgba(0, 212, 255, 0.3);
+		background: rgba(12, 12, 18, 0.95);
 		border-radius: 12px;
 		overflow: hidden;
-		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.5),
-			0 0 60px rgba(0, 212, 255, 0.05);
 		animation: fadeIn 0.4s ease-out 0.1s backwards;
 	}
 
@@ -401,10 +367,10 @@
 
 	.messages-container {
 		overflow-y: auto;
-		padding: 24px;
+		padding: 8px;
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
+		gap: 4px;
 	}
 
 	.messages-container::-webkit-scrollbar {
@@ -447,28 +413,24 @@
 		font-size: 0.9rem;
 	}
 
-	/* Message Bubbles */
+	/* Message Styling */
 	.message-wrapper {
-		display: flex;
-		align-items: flex-end;
-		gap: 8px;
+		width: 100%;
+		padding: 8px;
 		animation: messageSlide 0.3s ease-out;
 		position: relative;
+		border-radius: 4px;
+		transition: background 0.15s;
 	}
 
-	.message-wrapper.own {
-		justify-content: flex-end;
+	.message-wrapper:hover {
+		background: rgba(255, 255, 255, 0.03);
 	}
 
-	.message-bubble {
+	.message-row {
 		display: flex;
 		gap: 12px;
-		align-items: flex-end;
-		max-width: 75%;
-	}
-
-	.message-wrapper.own .message-bubble {
-		flex-direction: row-reverse;
+		align-items: flex-start;
 	}
 
 	@keyframes messageSlide {
@@ -482,68 +444,54 @@
 		}
 	}
 
-	.message-avatar-container {
+	.avatar-col {
 		flex-shrink: 0;
 	}
 
 	.msg-avatar,
 	.msg-avatar-placeholder {
-		width: 64px;
-		height: 64px;
+		width: 40px;
+		height: 40px;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.5rem;
+		font-size: 1rem;
 		font-weight: 700;
 		color: white;
 		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		border: 2px solid rgba(0, 212, 255, 0.4);
+		border: 1.5px solid rgba(0, 212, 255, 0.3);
 		object-fit: cover;
 	}
 
-	.bubble-content {
-		background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 170, 0.1));
-		backdrop-filter: blur(10px);
-		border: 1px solid rgba(0, 212, 255, 0.3);
-		border-radius: 12px 12px 12px 4px;
-		padding: 8px;
-		max-width: 100%;
-		word-wrap: break-word;
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-		transition: all 0.2s;
+	.message-content {
+		flex: 1;
+		min-width: 0;
 	}
 
-	.message-wrapper.own .bubble-content {
-		background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 200, 100, 0.1));
-		border-color: rgba(0, 255, 136, 0.3);
-		border-radius: 12px 12px 4px 12px;
-	}
-
-	.bubble-content:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-	}
-
-	.bubble-header {
+	.message-meta {
 		display: flex;
-		gap: 10px;
-		align-items: center;
-		margin-bottom: 6px;
+		align-items: baseline;
+		gap: 8px;
+		margin-bottom: 4px;
 	}
 
-	.bubble-username {
-		font-weight: 700;
-		font-size: 0.85rem;
+	.username {
+		font-weight: 600;
+		font-size: 0.95rem;
 		color: #00d4ff;
 	}
 
-	.message-wrapper.own .bubble-username {
+	.message-wrapper.own .username {
 		color: #00ff88;
 	}
 
-	.bubble-username.claude {
+	.username.claude {
 		color: #a855f7;
+	}
+
+	.meta-spacer {
+		flex: 1;
 	}
 
 	.message-id-note {
@@ -552,16 +500,16 @@
 		font-weight: 400;
 	}
 
-	.bubble-time {
+	.msg-time {
 		font-size: 0.7rem;
-		color: rgba(255, 255, 255, 0.4);
-		margin-left: auto;
+		color: rgba(255, 255, 255, 0.35);
 	}
 
-	.bubble-text {
+	.message-text {
 		font-size: 0.95rem;
-		line-height: 1.5;
+		line-height: 1.4;
 		color: rgba(255, 255, 255, 0.95);
+		padding: 0;
 	}
 
 	.message-reactions {
@@ -571,15 +519,20 @@
 		margin-top: 10px;
 	}
 
+	.message-reactions.compact {
+		margin-top: 6px;
+		gap: 4px;
+	}
+
 	.reaction-badge {
 		display: flex;
 		align-items: center;
 		gap: 4px;
-		padding: 4px 8px;
+		padding: 2px 6px;
 		background: rgba(0, 0, 0, 0.3);
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 12px;
-		font-size: 0.85rem;
+		font-size: 0.8rem;
 		cursor: pointer;
 		transition: all 0.2s;
 		animation: fadeIn 0.2s ease-out;
@@ -870,9 +823,7 @@
 			padding: 16px;
 		}
 
-		.message-bubble {
-			max-width: 85%;
-		}
+
 
 		.message-input-form {
 			padding: 16px;
@@ -917,27 +868,16 @@
 			font-size: 1rem;
 		}
 
-		.message-bubble {
-			max-width: 90%;
+		.username {
+			font-size: 0.85rem;
 		}
 
-		.bubble-header {
-			gap: 6px;
-		}
-
-		.bubble-username {
-			font-size: 0.8rem;
-		}
-
-		.message-id-note {
+		.message-id-note,
+		.msg-time {
 			font-size: 0.65rem;
 		}
 
-		.bubble-time {
-			font-size: 0.65rem;
-		}
-
-		.bubble-text {
+		.message-text {
 			font-size: 0.9rem;
 		}
 	}
