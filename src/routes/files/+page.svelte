@@ -403,7 +403,7 @@
 	}
 
 	.file-name {
-		font-size: 1rem;
+		font-size: 0.833rem;
 		font-weight: 600;
 		color: white;
 	}
@@ -420,7 +420,7 @@
 		border-radius: 16px;
 		color: white;
 		font-weight: 600;
-		font-size: 1rem;
+		font-size: 0.833rem;
 		cursor: pointer;
 		transition: all 0.3s;
 		box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
@@ -511,7 +511,7 @@
 	}
 
 	.doc-name {
-		font-size: 1rem;
+		font-size: 0.833rem;
 		font-weight: 600;
 		color: white;
 		white-space: nowrap;
@@ -536,7 +536,7 @@
 		border-radius: 12px;
 		cursor: pointer;
 		transition: all 0.2s;
-		font-size: 1rem;
+		font-size: 0.833rem;
 	}
 
 	.download-btn:hover {
@@ -568,7 +568,7 @@
 		border-radius: 12px;
 		color: white;
 		font-family: 'Courier New', monospace;
-		font-size: 0.9rem;
+		font-size: 0.833rem;
 		resize: vertical;
 		margin-bottom: 12px;
 	}
@@ -625,7 +625,7 @@
 	.document-content pre {
 		color: rgba(255, 255, 255, 0.8);
 		font-family: 'Courier New', monospace;
-		font-size: 0.9rem;
+		font-size: 0.833rem;
 		white-space: pre-wrap;
 		word-wrap: break-word;
 		margin: 0;
@@ -667,12 +667,12 @@
 	}
 
 	.empty-state span {
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 	}
 
 	.auth-message {
 		color: rgba(255, 255, 255, 0.7);
-		font-size: 1.1rem;
+		font-size: 0.833rem;
 		text-align: center;
 		padding: 40px;
 	}
@@ -689,7 +689,7 @@
 
 	.rag-description {
 		color: rgba(255, 255, 255, 0.7);
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		margin-bottom: 24px;
 	}
 
@@ -707,7 +707,7 @@
 		border: 2px solid rgba(168, 85, 247, 0.3);
 		border-radius: 16px;
 		color: white;
-		font-size: 1rem;
+		font-size: 0.833rem;
 		font-family: inherit;
 		resize: vertical;
 		transition: all 0.3s;
@@ -737,7 +737,7 @@
 		border-radius: 16px;
 		color: white;
 		font-weight: 600;
-		font-size: 1rem;
+		font-size: 0.833rem;
 		cursor: pointer;
 		transition: all 0.3s;
 		box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
@@ -787,12 +787,12 @@
 	.response-label {
 		font-weight: 600;
 		color: #a855f7;
-		font-size: 1.1rem;
+		font-size: 0.833rem;
 	}
 
 	.response-content {
 		color: rgba(255, 255, 255, 0.9);
-		font-size: 1rem;
+		font-size: 0.833rem;
 		line-height: 1.6;
 		white-space: pre-wrap;
 	}
@@ -816,7 +816,7 @@
 		}
 
 		.doc-name {
-			font-size: 0.95rem;
+			font-size: 0.833rem;
 		}
 	}
 </style>

@@ -392,7 +392,7 @@
 	}
 
 	.empty-state span {
-		font-size: 0.9rem;
+		font-size: 0.833rem;
 	}
 
 	/* Message Styling */
@@ -438,7 +438,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1rem;
+		font-size: 0.833rem;
 		font-weight: 700;
 		color: white;
 		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -460,7 +460,7 @@
 
 	.username {
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		color: #00d4ff;
 	}
 
@@ -488,7 +488,7 @@
 	}
 
 	.message-text {
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		line-height: 1.4;
 		color: rgba(255, 255, 255, 0.95);
 		padding: 0;
@@ -532,7 +532,7 @@
 	}
 
 	.reaction-emoji {
-		font-size: 1rem;
+		font-size: 0.833rem;
 		line-height: 1;
 	}
 
@@ -569,7 +569,7 @@
 		border: 1px solid;
 		border-radius: 6px;
 		color: white;
-		font-size: 1rem;
+		font-size: 0.833rem;
 		cursor: pointer;
 		transition: all 0.2s;
 		display: flex;
@@ -718,7 +718,7 @@
 		border: 2px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
 		color: white;
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		transition: all 0.3s;
 		outline: none;
 	}
@@ -740,7 +740,7 @@
 		border-radius: 12px;
 		color: white;
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		min-width: 48px;
 		display: flex;
 		justify-content: center;
@@ -830,14 +830,14 @@
 		.send-btn {
 			width: 44px;
 			height: 44px;
-			font-size: 1.1rem;
+			font-size: 0.833rem;
 		}
 
 		.msg-avatar,
 		.msg-avatar-placeholder {
 			width: 40px;
 			height: 40px;
-			font-size: 1rem;
+			font-size: 0.833rem;
 		}
 
 		.username {
@@ -850,7 +850,7 @@
 		}
 
 		.message-text {
-			font-size: 0.9rem;
+			font-size: 0.833rem;
 		}
 	}
 </style>

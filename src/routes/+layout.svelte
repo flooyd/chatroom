@@ -242,7 +242,7 @@
 	.nav-username {
 		color: #00ff88;
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		padding: 8px 12px;
 		background: rgba(0, 255, 136, 0.1);
 		border-radius: 12px;
@@ -328,7 +328,7 @@
 	.menu-dropdown button {
 		color: rgba(255, 255, 255, 0.8);
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		padding: 12px 16px;
 		border-radius: 12px;
 		transition: all 0.2s;
@@ -436,7 +436,7 @@
 	.modal form label {
 		font-weight: 600;
 		color: rgba(255, 255, 255, 0.9);
-		font-size: 0.9rem;
+		font-size: 0.833rem;
 		margin-bottom: -8px;
 	}
 
@@ -446,7 +446,7 @@
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
 		color: white;
-		font-size: 1rem;
+		font-size: 0.833rem;
 		transition: all 0.3s;
 	}
 
@@ -503,7 +503,7 @@
 		background: white;
 		color: #1f1f1f;
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: 0.833rem;
 		border-radius: 12px;
 		transition: all 0.3s;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -522,7 +522,7 @@
 		gap: 16px;
 		margin: 20px 0;
 		color: rgba(255, 255, 255, 0.4);
-		font-size: 0.9rem;
+		font-size: 0.833rem;
 	}
 
 	.divider::before,
@@ -542,7 +542,7 @@
 		}
 
 		nav .title {
-			font-size: 1rem;
+			font-size: 0.833rem;
 		}
 
 		.nav-logo {

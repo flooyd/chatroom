@@ -111,7 +111,7 @@
 
 	.online-count,
 	.total-count {
-		font-size: 1.1rem;
+		font-size: 0.833rem;
 		font-weight: 600;
 		color: rgba(255, 255, 255, 0.9);
 		display: flex;
@@ -256,7 +256,7 @@
 	}
 
 	.status {
-		font-size: 0.9rem;
+		font-size: 0.833rem;
 		font-weight: 500;
 	}
 
@@ -271,7 +271,7 @@
 	.empty-message,
 	.auth-message {
 		color: rgba(255, 255, 255, 0.7);
-		font-size: 1.1rem;
+		font-size: 0.833rem;
 		text-align: center;
 		padding: 8px;
 	}
@@ -314,7 +314,7 @@
 		}
 
 		.username {
-			font-size: 1.1rem;
+			font-size: 0.833rem;
 		}
 	}
 </style>
