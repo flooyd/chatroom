@@ -351,6 +351,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
+		padding-top: 16px;
+		padding-bottom: 60px;
 	}
 
 	.messages-container::-webkit-scrollbar {
@@ -692,9 +694,14 @@
 
 	/* Input Area */
 	.input-area {
-		padding: 6px 8px 8px;
+		padding: 8px;
 		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
 		border-top: 1px solid rgba(0, 212, 255, 0.15);
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background: black;
 	}
 
 	.message-input-form {
@@ -798,10 +805,6 @@
 			height: calc(100vh - 100px);
 			height: calc(100dvh - 100px);
 		}
-
-		.messages-container {
-			padding: 4px 0px;
-		}
 	}
 
 	@media (max-width: 600px) {
@@ -809,11 +812,6 @@
 			height: calc(100vh - 80px);
 			height: calc(100dvh - 80px);
 			border-radius: 6px;
-		}
-
-		.messages-container {
-			padding: 8px 0px;
-			gap: 2px;
 		}
 
 		.message-input-form {
