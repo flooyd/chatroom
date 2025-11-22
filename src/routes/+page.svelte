@@ -808,6 +808,9 @@
 	}
 
 	@media (max-width: 600px) {
+		.messages-container {
+			padding-bottom: 40px;
+		}
 		.chat-main {
 			height: calc(100vh - 80px);
 			height: calc(100dvh - 80px);
