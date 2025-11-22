@@ -208,21 +208,21 @@
 									</div>
 									<div class="message-text">{message.text}</div>
 
-									{#if message.reactions && message.reactions.length > 0}
-										<div class="message-reactions compact">
-											{#each message.reactions as reaction}
-												<button
-													class="reaction-badge"
-													class:user-reacted={userHasReacted(reaction, data.user?.username || '')}
-													onclick={() => handleReaction(message.id, reaction.type)}
-													title={reaction.users.join(', ')}
-												>
-													<span class="reaction-emoji">{reaction.type}</span>
-													<span class="reaction-count">{reaction.users.length}</span>
-												</button>
-											{/each}
-										</div>
-									{/if}
+								{#if message.reactions && message.reactions.length > 0}
+									<div class="message-reactions compact">
+										{#each message.reactions as reaction}
+											<button
+												class="reaction-badge"
+												class:user-reacted={userHasReacted(reaction, data.user?.username || '')}
+												onclick={() => handleReaction(message.id, reaction.type)}
+												title={reaction.users.join(', ')}
+											>
+												<span class="reaction-emoji">{reaction.type}</span>
+												<span class="reaction-count">{reaction.users.length}</span>
+											</button>
+										{/each}
+									</div>
+								{/if}
 								</div>
 							</div>
 
@@ -564,29 +564,36 @@
 
 	.message-actions {
 		display: flex;
-		gap: 8px;
-		padding-bottom: 8px;
+		gap: 6px;
 		align-items: center;
-		position: relative;
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		background: rgba(12, 12, 18, 0.8);
+		backdrop-filter: blur(10px);
+		border-radius: 8px;
+		padding: 4px 6px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 	}
 
 	.add-reaction-btn,
 	.ai-respond-btn,
 	.delete-btn {
 		flex-shrink: 0;
-		width: 36px;
-		height: 36px;
+		width: 32px;
+		height: 32px;
 		padding: 0;
 		border: 1px solid;
-		border-radius: 50%;
+		border-radius: 6px;
 		color: white;
-		font-size: 1.2rem;
+		font-size: 1rem;
 		cursor: pointer;
 		transition: all 0.2s;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		box-shadow: none;
 		animation: fadeInButton 0.2s ease-out;
 	}
 
@@ -664,8 +671,8 @@
 
 	.reaction-picker {
 		position: absolute;
-		top: 45px;
-		left: 0;
+		top: 50px;
+		right: 8px;
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.95), rgba(8, 8, 12, 0.95));
 		backdrop-filter: blur(20px);
 		border: 1px solid rgba(251, 191, 36, 0.4);
