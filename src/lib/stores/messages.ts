@@ -2,6 +2,11 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { io, type Socket } from 'socket.io-client';
 
+export interface Reaction {
+	type: string;
+	users: string[];
+}
+
 export interface Message {
 	id: number;
 	username: string;
@@ -9,6 +14,7 @@ export interface Message {
 	timestamp: number;
 	profilePictureUrl?: string | null;
 	linkToMessage?: number | null;
+	reactions?: Reaction[];
 }
 
 export const messages = writable<Message[]>([]);
@@ -49,6 +55,15 @@ export function initializeMessages(username: string | null, isVerified: boolean 
 	socket.on('delete-message', (messageId: number) => {
 		console.log('Delete message via socket:', messageId);
 		messages.update(currentMessages => currentMessages.filter(m => m.id !== messageId));
+	});
+
+	socket.on('message-reaction', ({ messageId, reactions }: { messageId: number; reactions: Reaction[] }) => {
+		console.log('Reaction update via socket:', messageId, reactions);
+		messages.update(currentMessages => 
+			currentMessages.map(m => 
+				m.id === messageId ? { ...m, reactions } : m
+			)
+		);
 	});
 
 	socket.on('disconnect', () => {

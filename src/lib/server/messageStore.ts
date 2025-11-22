@@ -1,7 +1,12 @@
 // Database-backed message store
 import { db } from '$lib/server/db';
-import { messages } from '$lib/server/db/schema';
-import { desc, gt, sql } from 'drizzle-orm';
+import { messages, reactions } from '$lib/server/db/schema';
+import { desc, gt, sql, eq } from 'drizzle-orm';
+
+interface Reaction {
+	type: string;
+	users: string[];
+}
 
 interface Message {
 	id: number;
@@ -10,6 +15,7 @@ interface Message {
 	timestamp: number;
 	profilePictureUrl?: string | null;
 	linkToMessage?: number | null;
+	reactions?: Reaction[];
 }
 
 const MAX_MESSAGES = 50; // Keep only last 50 messages
@@ -46,23 +52,56 @@ export async function addMessage(username: string, text: string, profilePictureU
 }
 
 export async function getMessages(since?: number): Promise<Message[]> {
+	let result;
+	
 	if (since) {
-		const result = await db
+		result = await db
 			.select()
 			.from(messages)
 			.where(gt(messages.timestamp, since))
 			.orderBy(messages.timestamp);
-		return result;
+	} else {
+		result = await db
+			.select()
+			.from(messages)
+			.orderBy(desc(messages.timestamp))
+			.limit(MAX_MESSAGES);
+		
+		// Return in chronological order (oldest first)
+		result = result.reverse();
 	}
 
-	const result = await db
-		.select()
-		.from(messages)
-		.orderBy(desc(messages.timestamp))
-		.limit(MAX_MESSAGES);
-	
-	// Return in chronological order (oldest first)
-	return result.reverse();
+	// Get reactions for all messages
+	const messageIds = result.map(m => m.id);
+	if (messageIds.length > 0) {
+		const allReactions = await db
+			.select()
+			.from(reactions)
+			.where(sql`${reactions.messageId} IN (${sql.join(messageIds.map(id => sql`${id}`), sql`, `)})`);
+
+		// Group reactions by message and type
+		const reactionsByMessage = new Map<number, Map<string, string[]>>();
+		allReactions.forEach((r) => {
+			if (!reactionsByMessage.has(r.messageId)) {
+				reactionsByMessage.set(r.messageId, new Map());
+			}
+			const msgReactions = reactionsByMessage.get(r.messageId)!;
+			if (!msgReactions.has(r.type)) {
+				msgReactions.set(r.type, []);
+			}
+			msgReactions.get(r.type)!.push(r.username);
+		});
+
+		// Add reactions to messages
+		return result.map(msg => ({
+			...msg,
+			reactions: reactionsByMessage.has(msg.id)
+				? Array.from(reactionsByMessage.get(msg.id)!.entries()).map(([type, users]) => ({ type, users }))
+				: []
+		}));
+	}
+
+	return result;
 }
 
 async function cleanupOldMessages(): Promise<void> {

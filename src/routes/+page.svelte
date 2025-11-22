@@ -9,6 +9,9 @@
 	let messagesContainer = $state<HTMLDivElement>();
 	let hoveredMessageId = $state<number | null>(null);
 	let isAiResponding = $state(false);
+	let showReactionPicker = $state<number | null>(null);
+
+	const reactionEmojis = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👏'];
 
 	// Create a map of username to profile picture for quick lookup
 	const userProfilePics = $derived(
@@ -21,17 +24,8 @@
 		) || {}
 	);
 
-	// Create a set of message IDs that have already been linked to
-	const linkedMessageIds = $derived(
-		new Set($messages.filter((m) => m.linkToMessage).map((m) => m.linkToMessage))
-	);
-
 	function isUserOnline(username: string): boolean {
 		return $onlineUsers.includes(username);
-	}
-
-	function isMessageLinked(messageId: number): boolean {
-		return linkedMessageIds.has(messageId);
 	}
 
 	function formatLastOnline(lastOnlineTime: Date | null): string {
@@ -128,38 +122,38 @@
 		}
 	}
 
+	async function handleReaction(messageId: number, reactionType: string) {
+		try {
+			const response = await fetch('/api/messages/react', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ messageId, reactionType })
+			});
+
+			const result = await response.json();
+
+			if (!result.success) {
+				console.error('Reaction failed:', result.error);
+			}
+
+			showReactionPicker = null;
+		} catch (error) {
+			console.error('Failed to react:', error);
+		}
+	}
+
+	function toggleReactionPicker(messageId: number) {
+		showReactionPicker = showReactionPicker === messageId ? null : messageId;
+	}
+
+	function userHasReacted(reaction: any, username: string): boolean {
+		return reaction.users.includes(username);
+	}
+
 	// Auto-scroll when new messages arrive
 	$effect(() => {
 		if ($messages.length > 0 && messagesContainer) {
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
-		}
-	});
-
-	// Update link lines when messages change
-	$effect(() => {
-		if ($messages.length > 0 && messagesContainer) {
-			setTimeout(() => {
-				if (!messagesContainer) return;
-
-				const linkLines = messagesContainer.querySelectorAll('.message-link-line');
-				linkLines.forEach((line) => {
-					const linkTo = line.getAttribute('data-link-to');
-					if (!linkTo || !messagesContainer) return;
-
-					const wrapper = line.closest('.message-wrapper');
-					const targetWrapper = messagesContainer.querySelector(`[data-message-id="${linkTo}"]`);
-
-					if (wrapper && targetWrapper) {
-						const wrapperRect = wrapper.getBoundingClientRect();
-						const targetRect = targetWrapper.getBoundingClientRect();
-						const height = wrapperRect.top - targetRect.bottom;
-
-						if (height > 0) {
-							(line as HTMLElement).style.height = `${height}px`;
-						}
-					}
-				});
-			}, 50);
 		}
 	});
 </script>
@@ -187,21 +181,15 @@
 							<span>Start the conversation!</span>
 						</div>
 					{:else}
-						{#each $messages as message (message.id)}
-							<div
-								class="message-wrapper"
-								class:own={message.username === data.user.username}
-								class:has-link={message.linkToMessage}
-								role="article"
-								data-message-id={message.id}
-								onmouseenter={() => (hoveredMessageId = message.id)}
-								onmouseleave={() => (hoveredMessageId = null)}
-							>
-								{#if message.linkToMessage}
-									<div class="message-link-line" data-link-to={message.linkToMessage}></div>
-								{/if}
-
-								<div class="message-bubble">
+					{#each $messages as message (message.id)}
+						<div
+							class="message-wrapper"
+							class:own={message.username === data.user.username}
+							role="article"
+							data-message-id={message.id}
+							onmouseenter={() => (hoveredMessageId = message.id)}
+							onmouseleave={() => (hoveredMessageId = null)}
+						>								<div class="message-bubble">
 									{#if message.username !== data.user.username}
 										<div class="message-avatar-container">
 											{#if userProfilePics[message.username]}
@@ -232,6 +220,22 @@
 											<span class="bubble-time">{formatMessageTime(message.timestamp)}</span>
 										</div>
 										<div class="bubble-text">{message.text}</div>
+										
+										{#if message.reactions && message.reactions.length > 0}
+											<div class="message-reactions">
+												{#each message.reactions as reaction}
+													<button
+														class="reaction-badge"
+														class:user-reacted={userHasReacted(reaction, data.user?.username || '')}
+														onclick={() => handleReaction(message.id, reaction.type)}
+														title={reaction.users.join(', ')}
+													>
+														<span class="reaction-emoji">{reaction.type}</span>
+														<span class="reaction-count">{reaction.users.length}</span>
+													</button>
+												{/each}
+											</div>
+										{/if}
 									</div>
 									{#if message.username === data.user.username}
 										<div class="message-avatar-container">
@@ -250,26 +254,22 @@
 									{/if}
 								</div>
 
-								<div class="reactions">
-									<button
-										class="like-btn"
-										title="Like"
-										onclick={() => alert('Like feature coming soon!')}
-									>👍</button>
-								</div>
-
 								{#if hoveredMessageId === message.id}
 									<div class="message-actions">
-										{#if message.username !== 'claude' && data.user?.username === 'admin'}
+										<button
+											class="add-reaction-btn"
+											onclick={() => toggleReactionPicker(message.id)}
+											title="Add reaction"
+										>
+											😊+
+										</button>
+										
+										{#if message.username !== 'claude' && message.username === data.user?.username}
 											<button
 												class="ai-respond-btn"
 												onclick={() => handleAiResponse(message.id)}
-												disabled={isAiResponding || isMessageLinked(message.id)}
-												title={isMessageLinked(message.id)
-													? 'AI already responded to this message'
-													: isAiResponding
-														? 'AI is responding...'
-														: 'Ask AI to respond'}
+												disabled={isAiResponding}
+												title={isAiResponding ? 'AI is responding...' : 'Ask AI to respond'}
 											>
 												🤖
 											</button>
@@ -284,6 +284,19 @@
 											</button>
 										{/if}
 									</div>
+
+									{#if showReactionPicker === message.id}
+										<div class="reaction-picker">
+											{#each reactionEmojis as emoji}
+												<button
+													class="reaction-option"
+													onclick={() => handleReaction(message.id, emoji)}
+												>
+													{emoji}
+												</button>
+											{/each}
+										</div>
+									{/if}
 								{/if}
 							</div>
 						{/each}
@@ -447,33 +460,6 @@
 		justify-content: flex-end;
 	}
 
-	.message-link-line {
-		position: absolute;
-		left: 32px;
-		bottom: 100%;
-		width: 2px;
-		background: linear-gradient(180deg, rgba(139, 92, 246, 0.6), rgba(139, 92, 246, 0.2));
-		pointer-events: none;
-		border-radius: 2px;
-		animation: linkLineGrow 0.3s ease-out;
-	}
-
-	.message-wrapper.own .message-link-line {
-		left: auto;
-		right: 32px;
-		background: linear-gradient(180deg, rgba(139, 92, 246, 0.6), rgba(139, 92, 246, 0.2));
-	}
-
-	@keyframes linkLineGrow {
-		from {
-			height: 0;
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-
 	.message-bubble {
 		display: flex;
 		gap: 12px;
@@ -578,13 +564,60 @@
 		color: rgba(255, 255, 255, 0.95);
 	}
 
+	.message-reactions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin-top: 10px;
+	}
+
+	.reaction-badge {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 8px;
+		background: rgba(0, 0, 0, 0.3);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 12px;
+		font-size: 0.85rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		animation: fadeIn 0.2s ease-out;
+	}
+
+	.reaction-badge:hover {
+		background: rgba(0, 0, 0, 0.5);
+		border-color: rgba(0, 212, 255, 0.5);
+		transform: scale(1.05);
+	}
+
+	.reaction-badge.user-reacted {
+		background: rgba(0, 212, 255, 0.2);
+		border-color: rgba(0, 212, 255, 0.6);
+	}
+
+	.reaction-emoji {
+		font-size: 1rem;
+		line-height: 1;
+	}
+
+	.reaction-count {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.8);
+		min-width: 12px;
+		text-align: center;
+	}
+
 	.message-actions {
 		display: flex;
 		gap: 8px;
 		padding-bottom: 8px;
 		align-items: center;
+		position: relative;
 	}
 
+	.add-reaction-btn,
 	.ai-respond-btn,
 	.delete-btn {
 		flex-shrink: 0;
@@ -602,6 +635,21 @@
 		justify-content: center;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 		animation: fadeInButton 0.2s ease-out;
+	}
+
+	.add-reaction-btn {
+		background: linear-gradient(135deg, #fbbf24, #f59e0b);
+		border-color: rgba(251, 191, 36, 0.5);
+	}
+
+	.add-reaction-btn:hover {
+		transform: scale(1.1);
+		box-shadow: 0 4px 16px rgba(251, 191, 36, 0.6);
+		background: linear-gradient(135deg, #f59e0b, #d97706);
+	}
+
+	.add-reaction-btn:active {
+		transform: scale(0.95);
 	}
 
 	.ai-respond-btn {
@@ -659,6 +707,47 @@
 		50% {
 			transform: scale(1.05);
 		}
+	}
+
+	.reaction-picker {
+		position: absolute;
+		top: 45px;
+		left: 0;
+		background: linear-gradient(135deg, rgba(12, 12, 18, 0.95), rgba(8, 8, 12, 0.95));
+		backdrop-filter: blur(20px);
+		border: 1px solid rgba(251, 191, 36, 0.4);
+		border-radius: 12px;
+		padding: 8px;
+		display: flex;
+		gap: 6px;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+		z-index: 100;
+		animation: fadeInButton 0.2s ease-out;
+	}
+
+	.reaction-option {
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 8px;
+		font-size: 1.3rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.reaction-option:hover {
+		background: rgba(251, 191, 36, 0.2);
+		border-color: rgba(251, 191, 36, 0.5);
+		transform: scale(1.15);
+	}
+
+	.reaction-option:active {
+		transform: scale(0.9);
 	}
 
 	/* Input Area */
