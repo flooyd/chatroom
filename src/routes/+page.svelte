@@ -169,11 +169,8 @@
 {/if}
 
 {#if data.user && data.user.isVerified}
-	<div class="chat-layout">
-		<!-- Main Chat Area -->
-		<main class="chat-main">
-			<div class="messages-wrapper">
-				<div class="messages-container" bind:this={messagesContainer}>
+	<main class="chat-main">
+		<div class="messages-container" bind:this={messagesContainer}>
 					{#if $messages.length === 0}
 						<div class="empty-state">
 							<div class="empty-icon">💬</div>
@@ -272,10 +269,9 @@
 						</div>
 					{/each}
 					{/if}
-				</div>
-			</div>
+		</div>
 
-			<div class="input-area">
+		<div class="input-area">
 				<form
 					class="message-input-form"
 					onsubmit={(e) => {
@@ -294,9 +290,8 @@
 						<span class="btn-icon">→</span>
 					</button>
 				</form>
-			</div>
-		</main>
-	</div>
+		</div>
+	</main>
 {/if}
 
 <style>
@@ -339,38 +334,23 @@
 		display: inline-block;
 	}
 
-	/* Chat Layout */
-	.chat-layout {
-		display: flex;
-		flex-direction: column;
-		height: calc(100vh - 160px);
-		margin-top: 20px;
-		position: relative;
-	}
-
 	/* Chat Main */
 	.chat-main {
 		display: flex;
 		flex-direction: column;
+		height: calc(100vh - 140px);
 		background: rgba(12, 12, 18, 0.95);
-		border-radius: 12px;
+		border-radius: 8px;
 		overflow: hidden;
 		animation: fadeIn 0.4s ease-out 0.1s backwards;
 	}
 
-	.messages-wrapper {
-		flex: 1;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-	}
-
 	.messages-container {
+		flex: 1;
 		overflow-y: auto;
-		padding: 8px;
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		gap: 2px;
 	}
 
 	.messages-container::-webkit-scrollbar {
@@ -416,7 +396,7 @@
 	/* Message Styling */
 	.message-wrapper {
 		width: 100%;
-		padding: 8px;
+		padding: 4px 0px;
 		animation: messageSlide 0.3s ease-out;
 		position: relative;
 		border-radius: 4px;
@@ -712,7 +692,7 @@
 
 	/* Input Area */
 	.input-area {
-		padding: 8px;
+		padding: 6px 8px 8px;
 		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
 		border-top: 1px solid rgba(0, 212, 255, 0.15);
 	}
@@ -814,45 +794,29 @@
 
 	/* Responsive */
 	@media (max-width: 968px) {
-		.chat-layout {
-			height: 100vh;
-			height: 100dvh;
-			margin-top: 0;
-			padding: 16px;
-		}
-
 		.chat-main {
-			height: 100%;
-			min-height: unset;
+			height: calc(100vh - 100px);
+			height: calc(100dvh - 100px);
 		}
 
 		.messages-container {
-			padding: 16px;
-		}
-
-
-
-		.message-input-form {
-			padding: 16px;
+			padding: 4px 0px;
 		}
 	}
 
 	@media (max-width: 600px) {
-		.chat-layout {
-			padding: 12px;
-		}
-
 		.chat-main {
-			height: 100%;
+			height: calc(100vh - 80px);
+			height: calc(100dvh - 80px);
+			border-radius: 6px;
 		}
 
 		.messages-container {
-			padding: 12px;
-			gap: 12px;
+			padding: 8px 0px;
+			gap: 2px;
 		}
 
 		.message-input-form {
-			padding: 12px;
 			gap: 8px;
 			flex-direction: row;
 		}

@@ -253,7 +253,7 @@
 
 	@media (max-width: 600px) {
 		.signup-card {
-			padding: 28px 20px;
+			padding: 16px;
 		}
 
 		.header h1 {
