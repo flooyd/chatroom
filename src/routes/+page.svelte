@@ -352,7 +352,7 @@
 		flex-direction: column;
 		gap: 2px;
 		padding-top: 16px;
-		padding-bottom: 60px;
+		padding-bottom: 20px;
 	}
 
 	.messages-container::-webkit-scrollbar {
