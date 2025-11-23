@@ -249,7 +249,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 16px;
+		padding: 8px;
 		animation: slideDown 0.3s ease-out;
 	}
 
@@ -265,7 +265,7 @@
 	}
 
 	nav .title {
-		font-size: 1.4rem;
+		font-size: .833rem;
 		font-weight: 700;
 		background: linear-gradient(135deg, #00d4ff, #00ff88);
 		-webkit-background-clip: text;
@@ -279,7 +279,7 @@
 	}
 
 	.nav-logo {
-		height: 64px;
+		height: 40px;
 		width: auto;
 		filter: drop-shadow(0 2px 8px rgba(0, 212, 255, 0.4));
 		transition: all 0.3s;
