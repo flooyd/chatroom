@@ -100,6 +100,13 @@
 			await update();
 		};
 	};
+
+	const handleLogout = () => {
+		return async ({ update }: any) => {
+			menuOpen = false;
+			await update();
+		};
+	};
 </script>
 
 <nav>
@@ -138,7 +145,7 @@
 		{#if loggedIn}
 			<a href={resolve('/files')} onclick={() => menuOpen = false}>File Manager</a>
 			<a href={resolve('/profile')} onclick={() => menuOpen = false}>Profile</a>
-			<form method="POST" action="?/logout" use:enhance={handleLoginSubmit}>
+			<form method="POST" action="?/logout" use:enhance={handleLogout}>
 				<button type="submit" class="logout-btn">Logout</button>
 			</form>
 		{:else}
