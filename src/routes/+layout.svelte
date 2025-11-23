@@ -55,11 +55,13 @@
 	});
 
 	const openLoginModal = () => {
-		// Redirect to home page to show login modal
-		window.location.href = '/#login';
 		showLoginModal = true;
 		loginOrRegister = 'Login';
 		errorMessage = '';
+		// Update URL without navigation
+		if (typeof window !== 'undefined') {
+			window.history.pushState(null, '', '/#login');
+		}
 	};
 
 	const handleLoginSubmit = () => {

@@ -156,6 +156,12 @@
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		}
 	});
+
+	function openLoginModal() {
+		if (typeof window !== 'undefined') {
+			window.location.hash = 'login';
+		}
+	}
 </script>
 
 {#if !data.user}
@@ -167,8 +173,8 @@
 					Real-Time • AI-Powered • Secure
 				</div>
 				<h1 class="hero-title">
-					The Future of<br />
-					<span class="gradient-text">Team Communication</span>
+					Welcome to<br />
+					<span class="gradient-text">The Chat Room</span>
 				</h1>
 				<p class="hero-description">
 					Experience seamless real-time conversations with built-in AI assistance, 
@@ -176,7 +182,7 @@
 				</p>
 				
 				<div class="hero-actions">
-					<button onclick={() => window.location.href = '/#login'} class="primary-btn">
+					<button onclick={openLoginModal} class="primary-btn">
 						<span class="btn-text">Start Chatting</span>
 						<span class="btn-arrow">→</span>
 					</button>
