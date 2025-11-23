@@ -14,6 +14,31 @@
 	let errorMessage = $state('');
 	let menuOpen = $state(false);
 
+	// Check for login hash on mount and when hash changes
+	$effect(() => {
+		if (typeof window !== 'undefined') {
+			const checkHash = () => {
+				if (window.location.hash === '#login') {
+					showLoginModal = true;
+					loginOrRegister = 'Login';
+					errorMessage = '';
+					// Remove the hash from URL
+					window.history.replaceState(null, '', window.location.pathname);
+				}
+			};
+
+			// Check immediately
+			checkHash();
+
+			// Listen for hash changes
+			window.addEventListener('hashchange', checkHash);
+
+			return () => {
+				window.removeEventListener('hashchange', checkHash);
+			};
+		}
+	});
+
 	// Sync state with data prop changes (e.g., after logout)
 	$effect(() => {
 		loggedIn = !!data.user;
@@ -26,13 +51,6 @@
 		} else {
 			disconnectSocket();
 			disconnectMessages();
-		}
-
-		// Check if URL has #login hash and open modal
-		if (typeof window !== 'undefined' && window.location.hash === '#login') {
-			showLoginModal = true;
-			// Remove the hash from URL
-			window.history.replaceState(null, '', window.location.pathname);
 		}
 	});
 
