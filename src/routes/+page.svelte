@@ -825,21 +825,20 @@
 	.chat-main {
 		display: flex;
 		flex-direction: column;
-		height: calc(100vh - 140px);
 		background: rgba(12, 12, 18, 0.95);
 		border-radius: 8px;
 		overflow: hidden;
+		margin-top: 97px;
 		animation: fadeIn 0.4s ease-out 0.1s backwards;
 	}
 
 	.messages-container {
-		flex: 1;
 		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
-		padding-top: 16px;
-		padding-bottom: 20px;
+		padding-top: 32px;
+		padding-bottom: 59px;
 	}
 
 	.messages-container::-webkit-scrollbar {

@@ -237,12 +237,10 @@
 
 <style>
 	nav {
-		position: sticky;
+		position: fixed;
 		top: 0;
 		left: 0;
-		right: 0;
-		margin-left: -20px;
-		margin-right: -20px;
+		width: 100%;
 		background: linear-gradient(135deg, rgba(10, 10, 15, 0.98), rgba(15, 15, 20, 0.95));
 		backdrop-filter: blur(20px);
 		border-bottom: 1px solid rgba(0, 212, 255, 0.2);
@@ -329,7 +327,6 @@
 		cursor: pointer;
 		z-index: 2001;
 		transition: all 0.3s;
-		margin-right: 40px;
 	}
 
 	.hamburger span {
@@ -427,7 +424,7 @@
 
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
-		
+		padding: 0px;
 	}
 
 	.modal-overlay {

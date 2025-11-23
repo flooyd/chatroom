@@ -75,14 +75,14 @@
 
 <style>
 	.about-container {
-		max-width: 1200px;
-		margin: 0 auto;
+		margin-bottom: 24px;
 		padding: 32px 20px;
+		padding-top: 97px;
 	}
 
 	.about-header {
 		text-align: center;
-		margin-bottom: 32px;
+		margin-bottom: 24px;
 		position: relative;
 	}
 
@@ -130,10 +130,11 @@
 	}
 
 	.content-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-		gap: 24px;
-		margin-bottom: 60px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		justify-content: center;
+		margin-bottom: 24px;
 	}
 
 	.feature-card {
@@ -145,6 +146,8 @@
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 		animation: fadeIn 0.6s ease-out backwards;
+		flex: 1 1 calc(33.333% - 16px);
+		min-width: 280px;
 	}
 
 	.feature-card:nth-child(1) { animation-delay: 0.1s; }

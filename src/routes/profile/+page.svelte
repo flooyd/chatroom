@@ -121,6 +121,7 @@
 		align-items: center;
 		margin-bottom: 32px;
 		gap: 20px;
+		padding-top: 97px;
 	}
 
 	h1 {

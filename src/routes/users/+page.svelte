@@ -95,6 +95,7 @@
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 		margin-bottom: 24px;
+		padding-top: 97px;
 	}
 
 	.stats {
