@@ -828,7 +828,7 @@
 		background: rgba(12, 12, 18, 0.95);
 		border-radius: 8px;
 		overflow: hidden;
-		margin-top: 97px;
+		margin-top: 51px;
 		animation: fadeIn 0.4s ease-out 0.1s backwards;
 	}
 
@@ -837,7 +837,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
-		padding-top: 32px;
+		padding-top: 8px;
 		padding-bottom: 59px;
 	}
 
