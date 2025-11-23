@@ -119,7 +119,7 @@
 
 	.header p {
 		color: rgba(255, 255, 255, 0.6);
-		font-size: 0.833rem;
+		font-size: 01rem;
 	}
 
 	.google-info {
@@ -165,7 +165,7 @@
 	}
 
 	.value {
-		font-size: 0.833rem;
+		font-size: 01rem;
 		font-weight: 600;
 		color: white;
 	}
@@ -185,7 +185,7 @@
 		font-weight: 600;
 		color: #00d4ff;
 		margin-bottom: 8px;
-		font-size: 0.833rem;
+		font-size: 01rem;
 	}
 
 	.form-group input {
@@ -195,7 +195,7 @@
 		border: 2px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
 		color: white;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		transition: all 0.3s;
 	}
 

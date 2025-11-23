@@ -15,6 +15,8 @@ const io = new Server(httpServer, {
 
 // Track online users
 const onlineUsers = new Map();
+// Track typing users
+const typingUsers = new Map();
 
 // Make online count globally available
 global.onlineUsersCount = 0;
@@ -35,6 +37,18 @@ io.on('connection', (socket) => {
 		io.emit('online-users', onlineUsersList);
 	});
 
+	socket.on('user-typing', (username) => {
+		typingUsers.set(socket.id, username);
+		const typingUsersList = Array.from(new Set(typingUsers.values()));
+		io.emit('typing-users', typingUsersList);
+	});
+
+	socket.on('user-stopped-typing', () => {
+		typingUsers.delete(socket.id);
+		const typingUsersList = Array.from(new Set(typingUsers.values()));
+		io.emit('typing-users', typingUsersList);
+	});
+
 	socket.on('disconnect', () => {
 		const username = onlineUsers.get(socket.id);
 		if (username) {
@@ -45,6 +59,10 @@ io.on('connection', (socket) => {
 			global.onlineUsersCount = onlineUsersList.length;
 			io.emit('online-users', onlineUsersList);
 		}
+		// Remove from typing users on disconnect
+		typingUsers.delete(socket.id);
+		const typingUsersList = Array.from(new Set(typingUsers.values()));
+		io.emit('typing-users', typingUsersList);
 	});
 });
 

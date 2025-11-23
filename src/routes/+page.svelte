@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onlineUsers } from '$lib/stores/socket';
+	import { onlineUsers, typingUsers, getSocket } from '$lib/stores/socket';
 	import { messages, sendMessage } from '$lib/stores/messages';
 	import { showLoginModal } from '$lib/stores/loginModal';
 	import { io } from 'socket.io-client';
@@ -18,6 +18,8 @@
 	let isAiResponding = $state(false);
 	let showReactionPicker = $state<number | null>(null);
 	let publicOnlineCount = $state(0);
+	let typingTimeout: ReturnType<typeof setTimeout> | null = null;
+	let isTyping = $state(false);
 
 	// For logged-out users, connect to socket just to listen for online count
 	$effect(() => {
@@ -158,6 +160,48 @@
 	function userHasReacted(reaction: any, username: string): boolean {
 		return reaction.users.includes(username);
 	}
+
+	// Handle typing indicator
+	function handleTyping() {
+		if (!data.user) return;
+		
+		const socket = getSocket();
+		if (!socket) return;
+
+		// Emit typing event if not already typing
+		if (!isTyping) {
+			socket.emit('user-typing', data.user.username);
+			isTyping = true;
+		}
+
+		// Clear existing timeout
+		if (typingTimeout) {
+			clearTimeout(typingTimeout);
+		}
+
+		// Set new timeout to stop typing after 2 seconds of inactivity
+		typingTimeout = setTimeout(() => {
+			if (socket) {
+				socket.emit('user-stopped-typing');
+				isTyping = false;
+			}
+		}, 2000);
+	}
+
+	// Filter out current user from typing users
+	const displayTypingUsers = $derived(
+		$typingUsers.filter(user => user !== data.user?.username)
+	);
+
+	// Format typing text
+	const typingText = $derived(() => {
+		const count = displayTypingUsers.length;
+		if (count === 0) return '';
+		if (count === 1) return `${displayTypingUsers[0]} is typing...`;
+		if (count === 2) return `${displayTypingUsers[0]} and ${displayTypingUsers[1]} are typing...`;
+		if (count === 3) return `${displayTypingUsers[0]}, ${displayTypingUsers[1]} and ${displayTypingUsers[2]} are typing...`;
+		return `${displayTypingUsers[0]}, ${displayTypingUsers[1]} and ${count - 2} others are typing...`;
+	});
 
 	// Auto-scroll when new messages arrive
 	$effect(() => {
@@ -342,6 +386,12 @@
 			{/if}
 		</div>
 
+		{#if displayTypingUsers.length > 0}
+			<div class="typing-indicator">
+				{typingText()}
+			</div>
+		{/if}
+
 		<div class="input-area">
 			<form
 				class="message-input-form"
@@ -353,6 +403,7 @@
 				<input
 					type="text"
 					bind:value={messageText}
+					oninput={handleTyping}
 					placeholder="Type your message..."
 					maxlength="500"
 					class="chat-input"
@@ -372,7 +423,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 60px 20px;
+		padding: 0px 20px;
+		margin-top: 20px;
 		animation: fadeIn 0.8s ease-out;
 	}
 
@@ -878,7 +930,7 @@
 	}
 
 	.empty-state span {
-		font-size: 0.833rem;
+		font-size: 01rem;
 	}
 
 	/* Message Styling */
@@ -924,7 +976,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		font-weight: 700;
 		color: white;
 		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -946,7 +998,7 @@
 
 	.username {
 		font-weight: 600;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		color: #00d4ff;
 	}
 
@@ -974,7 +1026,7 @@
 	}
 
 	.message-text {
-		font-size: 0.833rem;
+		font-size: 01rem;
 		line-height: 1.4;
 		color: rgba(255, 255, 255, 0.95);
 		padding: 0;
@@ -1018,7 +1070,7 @@
 	}
 
 	.reaction-emoji {
-		font-size: 0.833rem;
+		font-size: 01rem;
 		line-height: 1;
 	}
 
@@ -1055,7 +1107,7 @@
 		border: 1px solid;
 		border-radius: 6px;
 		color: white;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		cursor: pointer;
 		transition: all 0.2s;
 		display: flex;
@@ -1178,6 +1230,34 @@
 		transform: scale(0.9);
 	}
 
+	/* Typing Indicator */
+	.typing-indicator {
+		position: fixed;
+		bottom: 67px;
+		right: 16px;
+		background: rgba(0, 0, 0, 0.9);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(0, 212, 255, 0.3);
+		border-radius: 8px;
+		padding: 8px 16px;
+		font-size: 0.85rem;
+		color: rgba(255, 255, 255, 0.7);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+		z-index: 10;
+		animation: fadeInSlide 0.3s ease-out;
+	}
+
+	@keyframes fadeInSlide {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
 	/* Input Area */
 	.input-area {
 		padding: 8px;
@@ -1204,7 +1284,7 @@
 		border: 2px solid rgba(0, 212, 255, 0.3);
 		border-radius: 12px;
 		color: white;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		transition: all 0.3s;
 		outline: none;
 	}
@@ -1226,7 +1306,7 @@
 		border-radius: 12px;
 		color: white;
 		font-weight: 600;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		min-width: 48px;
 		display: flex;
 		justify-content: center;
@@ -1316,14 +1396,14 @@
 		.send-btn {
 			width: 44px;
 			height: 44px;
-			font-size: 0.833rem;
+			font-size: 01rem;
 		}
 
 		.msg-avatar,
 		.msg-avatar-placeholder {
 			width: 40px;
 			height: 40px;
-			font-size: 0.833rem;
+			font-size: 01rem;
 		}
 
 		.username {
@@ -1336,7 +1416,7 @@
 		}
 
 		.message-text {
-			font-size: 0.833rem;
+			font-size: 01rem;
 		}
 	}
 </style>

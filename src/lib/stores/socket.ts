@@ -3,8 +3,13 @@ import { io, type Socket } from 'socket.io-client';
 import { browser } from '$app/environment';
 
 export const onlineUsers = writable<string[]>([]);
+export const typingUsers = writable<string[]>([]);
 
 let socket: Socket | null = null;
+
+export function getSocket(): Socket | null {
+	return socket;
+}
 
 export function initializeSocket(username: string | null, isVerified: boolean = false) {
 	if (!browser) return;
@@ -35,6 +40,10 @@ export function initializeSocket(username: string | null, isVerified: boolean = 
 		onlineUsers.set(users);
 	});
 
+	socket.on('typing-users', (users: string[]) => {
+		typingUsers.set(users);
+	});
+
 	socket.on('disconnect', () => {
 		console.log('Disconnected from Socket.IO server');
 	});
@@ -47,5 +56,6 @@ export function disconnectSocket() {
 	}
 	
 	onlineUsers.set([]);
+	typingUsers.set([]);
 }
 

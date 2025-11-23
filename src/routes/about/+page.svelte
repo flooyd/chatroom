@@ -182,7 +182,7 @@
 	.feature-card p {
 		color: rgba(255, 255, 255, 0.8);
 		line-height: 1.6;
-		font-size: 0.833rem;
+		font-size: 01rem;
 	}
 
 	.tech-section {
@@ -218,7 +218,7 @@
 		font-weight: 600;
 		color: #00ffaa;
 		transition: all 0.3s;
-		font-size: 0.833rem;
+		font-size: 01rem;
 	}
 
 	.tech-badge:hover {

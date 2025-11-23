@@ -17,6 +17,8 @@ const webSocketServer = {
 		
 		// Track online users
 		const onlineUsers = new Map<string, string>();
+		// Track typing users
+		const typingUsers = new Map<string, string>();
 
 		io.on('connection', (socket) => {
 			console.log('Client connected:', socket.id);
@@ -33,6 +35,18 @@ const webSocketServer = {
 				io.emit('online-users', onlineUsersList);
 			});
 
+			socket.on('user-typing', (username: string) => {
+				typingUsers.set(socket.id, username);
+				const typingUsersList = Array.from(new Set(typingUsers.values()));
+				io.emit('typing-users', typingUsersList);
+			});
+
+			socket.on('user-stopped-typing', () => {
+				typingUsers.delete(socket.id);
+				const typingUsersList = Array.from(new Set(typingUsers.values()));
+				io.emit('typing-users', typingUsersList);
+			});
+
 			socket.on('disconnect', () => {
 				const username = onlineUsers.get(socket.id);
 				if (username) {
@@ -42,6 +56,10 @@ const webSocketServer = {
 					const onlineUsersList = Array.from(new Set(onlineUsers.values()));
 					io.emit('online-users', onlineUsersList);
 				}
+				// Remove from typing users on disconnect
+				typingUsers.delete(socket.id);
+				const typingUsersList = Array.from(new Set(typingUsers.values()));
+				io.emit('typing-users', typingUsersList);
 			});
 		});
 		

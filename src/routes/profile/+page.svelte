@@ -138,7 +138,7 @@
 		background: linear-gradient(135deg, rgba(255, 62, 0, 0.8), rgba(200, 40, 0, 0.8));
 		border: 2px solid rgba(255, 62, 0, 0.5);
 		padding: 8px;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		box-shadow: 0 4px 16px rgba(255, 62, 0, 0.2);
 		white-space: nowrap;
 	}
@@ -283,7 +283,7 @@
 		border-radius: 12px;
 		background: rgba(255, 255, 255, 0.05);
 		color: white;
-		font-size: 0.833rem;
+		font-size: 01rem;
 		transition: all 0.3s;
 	}
 
@@ -402,7 +402,7 @@
 
 		.logout-btn-header {
 			padding: 8px;
-			font-size: 0.833rem;
+			font-size: 01rem;
 		}
 
 		.profile-picture-section form,
