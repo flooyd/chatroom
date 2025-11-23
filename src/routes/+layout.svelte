@@ -1,49 +1,52 @@
 <script lang="ts">
 	import '../app.css';
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
+	import { onDestroy } from 'svelte';
 	import { initializeSocket, disconnectSocket } from '$lib/stores/socket';
 	import { initializeMessages, disconnectMessages } from '$lib/stores/messages';
+	import { showLoginModal as loginModalStore } from '$lib/stores/loginModal';
 
 	let { children, data } = $props();
 
 	const title = 'The Chat Room';
 	let loggedIn = $state(!!data.user);
 	let username = $state(data.user?.username || '');
-	let showLoginModal = $state(false);
+	const showLoginModal = $derived($loginModalStore);
 	let loginOrRegister = $state('Login');
 	let errorMessage = $state('');
 	let menuOpen = $state(false);
+
+	const unsubscribeLoginModal = loginModalStore.subscribe((value) => {
+		if (value) {
+			loginOrRegister = 'Login';
+			errorMessage = '';
+		}
+	});
+
+	onDestroy(() => {
+		unsubscribeLoginModal();
+	});
 
 	// Check for login hash on mount and when hash changes
 	$effect(() => {
 		if (typeof window !== 'undefined') {
 			const checkHash = () => {
 				if (window.location.hash === '#login') {
-					showLoginModal = true;
-					loginOrRegister = 'Login';
-					errorMessage = '';
+					loginModalStore.set(true);
 					// Remove the hash from URL
 					window.history.replaceState(null, '', window.location.pathname);
 				}
 			};
 
-			// Listen for custom event from landing page
-			const handleOpenModal = () => {
-				showLoginModal = true;
-				loginOrRegister = 'Login';
-				errorMessage = '';
-			};
-
 			// Check immediately
 			checkHash();
 
-			// Listen for hash changes and custom event
+			// Listen for hash changes
 			window.addEventListener('hashchange', checkHash);
-			window.addEventListener('openLoginModal', handleOpenModal);
 
 			return () => {
 				window.removeEventListener('hashchange', checkHash);
-				window.removeEventListener('openLoginModal', handleOpenModal);
 			};
 		}
 	});
@@ -63,21 +66,30 @@
 		}
 	});
 
+	const closeLoginModal = () => {
+		loginModalStore.set(false);
+	};
+
 	const openLoginModal = () => {
-		showLoginModal = true;
+		if (typeof window === 'undefined') {
+			return;
+		}
+
+		if (window.location.pathname !== '/') {
+			window.location.href = '/#login';
+			return;
+		}
+
+		loginModalStore.set(true);
 		loginOrRegister = 'Login';
 		errorMessage = '';
-		// Update URL without navigation
-		if (typeof window !== 'undefined') {
-			window.history.pushState(null, '', '/#login');
-		}
 	};
 
 	const handleLoginSubmit = () => {
 		return async ({ result, update }: any) => {
 			if (result.type === 'success') {
 				loggedIn = true;
-				showLoginModal = false;
+				closeLoginModal();
 				errorMessage = '';
 				if (result.data?.username) {
 					username = result.data.username;
@@ -91,13 +103,13 @@
 </script>
 
 <nav>
-	<a class="title" href="/" onclick={() => { showLoginModal = false; menuOpen = false; }}>
+	<a class="title" href={resolve('/')} onclick={() => { menuOpen = false; }}>
 		<img src="/chatroomhouse.png" alt="Chatroom" class="nav-logo" />
 		{title}
 	</a>
 	<div class="section-right">
 		{#if loggedIn}
-			<a href="/profile" class="nav-username" onclick={() => menuOpen = false}>{username}</a>
+			<a href={resolve('/profile')} class="nav-username" onclick={() => menuOpen = false}>{username}</a>
 		{/if}
 		<button class="hamburger" class:open={menuOpen} onclick={() => menuOpen = !menuOpen} aria-label="Menu">
 			<span></span>
@@ -108,13 +120,27 @@
 </nav>
 
 {#if menuOpen}
-	<div class="menu-overlay" onclick={() => menuOpen = false}></div>
+	<div
+		class="menu-overlay"
+		role="button"
+		tabindex="0"
+		onclick={() => menuOpen = false}
+		onkeydown={(event) => {
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault();
+				menuOpen = false;
+			}
+		}}
+	></div>
 	<div class="menu-dropdown" class:open={menuOpen}>
-		<a href="/about" onclick={() => menuOpen = false}>About</a>
-		<a href="/users" onclick={() => menuOpen = false}>Users</a>
+		<a href={resolve('/about')} onclick={() => menuOpen = false}>About</a>
+		<a href={resolve('/users')} onclick={() => menuOpen = false}>Users</a>
 		{#if loggedIn}
-			<a href="/files" onclick={() => menuOpen = false}>File Manager</a>
-			<a href="/profile" onclick={() => menuOpen = false}>Profile</a>
+			<a href={resolve('/files')} onclick={() => menuOpen = false}>File Manager</a>
+			<a href={resolve('/profile')} onclick={() => menuOpen = false}>Profile</a>
+			<form method="POST" action="?/logout" use:enhance={handleLoginSubmit}>
+				<button type="submit" class="logout-btn">Logout</button>
+			</form>
 		{:else}
 			<button onclick={() => { openLoginModal(); menuOpen = false; }}>Login</button>
 		{/if}
@@ -124,12 +150,13 @@
 {@render children()}
 
 {#if showLoginModal}
-	<div class="modal">
+	<div class="modal-overlay" onclick={closeLoginModal}></div>
+	<div class="modal" onclick={(e) => e.stopPropagation()}>
 		<div class="modal-title">
 			{loginOrRegister}
-			<button onclick={() => (showLoginModal = false)}>X</button>
+			<button onclick={closeLoginModal}>X</button>
 		</div>
-		<a href="/auth/google" class="google-btn">
+		<a href={resolve('/auth/google')} class="google-btn">
 			<svg
 				width="20"
 				height="20"
@@ -376,9 +403,31 @@
 		transform: translateX(4px);
 	}
 
+	.menu-dropdown form {
+		margin: 0;
+	}
+
+	.menu-dropdown .logout-btn {
+		color: #ff4444;
+		text-align: left;
+	}
+
+	.menu-dropdown .logout-btn:hover {
+		color: #ff6666;
+		background: rgba(255, 68, 68, 0.1);
+	}
+
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
 		
+	}
+
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.7);
+		z-index: 2999;
+		animation: fadeIn 0.3s;
 	}
 
 	.modal {
@@ -396,7 +445,7 @@
 			0 0 100px rgba(0, 212, 255, 0.1);
 		min-width: 420px;
 		animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		z-index: 2000;
+		z-index: 3000;
 	}
 
 	@keyframes modalIn {
@@ -595,20 +644,8 @@
 			width: calc(100% - 40px);
 			max-width: 400px;
 			padding: 24px;
-			top: auto;
-			bottom: auto;
-			transform: translate(-50%, 0);
-			margin-top: 20px;
-			margin-bottom: 20px;
-			max-height: calc(100vh - 120px);
+			max-height: calc(100vh - 40px);
 			overflow-y: auto;
-		}
-
-		@supports (-webkit-touch-callout: none) {
-			/* iOS Safari specific */
-			.modal {
-				margin-top: 20px;
-			}
 		}
 	}
 </style>

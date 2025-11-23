@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { onlineUsers } from '$lib/stores/socket';
 	import { messages, sendMessage } from '$lib/stores/messages';
+	import { showLoginModal } from '$lib/stores/loginModal';
 
 	const title = 'The Chat Room';
+
+	function openModal(event?: Event) {
+		event?.preventDefault();
+		event?.stopPropagation();
+		showLoginModal.set(true);
+	}
 
 	let { data } = $props();
 	let messageText = $state('');
@@ -156,13 +163,6 @@
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		}
 	});
-
-	function openLoginModal() {
-		// Trigger custom event that layout will listen to
-		if (typeof window !== 'undefined') {
-			window.dispatchEvent(new CustomEvent('openLoginModal'));
-		}
-	}
 </script>
 
 {#if !data.user}
@@ -183,7 +183,7 @@
 				</p>
 				
 				<div class="hero-actions">
-					<button onclick={openLoginModal} class="primary-btn">
+					<button type="button" onclick={openModal} class="primary-btn">
 						<span class="btn-text">Start Chatting</span>
 						<span class="btn-arrow">→</span>
 					</button>
