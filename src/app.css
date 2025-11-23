@@ -18,6 +18,10 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+html {
+	overflow-x: hidden;
+}
+
 * {
 	box-sizing: border-box;
 }
@@ -40,8 +44,8 @@ a:hover {
 
 body {
 	margin: 0;
-	padding: 0px 20px;
 	min-height: 100vh;
+	overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {

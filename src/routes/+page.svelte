@@ -585,7 +585,7 @@
 
 	.pill-3 {
 		bottom: 30%;
-		left: -5%;
+		left: 0;
 		animation: float-pill 4.5s ease-in-out infinite 0.5s;
 	}
 

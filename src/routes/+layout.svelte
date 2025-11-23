@@ -277,7 +277,7 @@
 		transition: all 0.3s;
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 8px;
 	}
 
 	.nav-logo {
@@ -299,7 +299,7 @@
 	.section-right {
 		display: flex;
 		align-items: center;
-		gap: 16px;
+		gap: 8px;
 	}
 
 	.nav-username {
@@ -329,6 +329,7 @@
 		cursor: pointer;
 		z-index: 2001;
 		transition: all 0.3s;
+		margin-right: 40px;
 	}
 
 	.hamburger span {
