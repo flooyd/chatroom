@@ -24,6 +24,12 @@
 		</div>
 
 		<div class="feature-card">
+			<div class="card-icon">✍️</div>
+			<h2>Typing Indicators</h2>
+			<p>Real-time typing indicators show when other users are composing messages, with smart formatting for multiple users typing simultaneously.</p>
+		</div>
+
+		<div class="feature-card">
 			<div class="card-icon">📄</div>
 			<h2>File Manager</h2>
 			<p>Upload, edit, download, and delete .txt documents (up to 10MB). Documents are stored securely in PostgreSQL.</p>
@@ -159,6 +165,7 @@
 	.feature-card:nth-child(7) { animation-delay: 0.4s; }
 	.feature-card:nth-child(8) { animation-delay: 0.45s; }
 	.feature-card:nth-child(9) { animation-delay: 0.5s; }
+	.feature-card:nth-child(10) { animation-delay: 0.55s; }
 
 	.feature-card:hover {
 		transform: translateY(-8px);
