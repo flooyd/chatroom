@@ -27,14 +27,23 @@
 				}
 			};
 
+			// Listen for custom event from landing page
+			const handleOpenModal = () => {
+				showLoginModal = true;
+				loginOrRegister = 'Login';
+				errorMessage = '';
+			};
+
 			// Check immediately
 			checkHash();
 
-			// Listen for hash changes
+			// Listen for hash changes and custom event
 			window.addEventListener('hashchange', checkHash);
+			window.addEventListener('openLoginModal', handleOpenModal);
 
 			return () => {
 				window.removeEventListener('hashchange', checkHash);
+				window.removeEventListener('openLoginModal', handleOpenModal);
 			};
 		}
 	});

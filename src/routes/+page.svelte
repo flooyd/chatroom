@@ -158,8 +158,9 @@
 	});
 
 	function openLoginModal() {
+		// Trigger custom event that layout will listen to
 		if (typeof window !== 'undefined') {
-			window.location.hash = 'login';
+			window.dispatchEvent(new CustomEvent('openLoginModal'));
 		}
 	}
 </script>
