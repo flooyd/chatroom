@@ -439,9 +439,9 @@
 
 	.modal {
 		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		width: 300px;
+		top: 100px;
+		left: calc(50%  - 150px);
 		padding: 16px;
 		background: linear-gradient(135deg, rgba(12, 12, 18, 0.98), rgba(8, 8, 12, 0.96));
 		backdrop-filter: blur(30px);
@@ -648,8 +648,6 @@
 		.modal {
 			padding: 16px;
 			max-height: calc(100vh - 40px);
-			max-width: calc(100vw - 40px);
-			min-width: calc(100vw - 40px);
 			overflow-y: auto;
 		}
 	}
