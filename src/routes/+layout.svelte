@@ -443,7 +443,6 @@
 		box-shadow:
 			0 20px 60px rgba(0, 0, 0, 0.7),
 			0 0 100px rgba(0, 212, 255, 0.1);
-		min-width: 420px;
 		animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		z-index: 3000;
 	}
@@ -640,11 +639,10 @@
 		}
 
 		.modal {
-			min-width: auto;
-			width: calc(100% - 40px);
-			max-width: 400px;
-			padding: 24px;
+			padding: 16px;
 			max-height: calc(100vh - 40px);
+			max-width: calc(100vw - 40px);
+			min-width: calc(100vw - 40px);
 			overflow-y: auto;
 		}
 	}
