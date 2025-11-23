@@ -2,8 +2,8 @@
 	import { onlineUsers } from '$lib/stores/socket';
 	import { messages, sendMessage } from '$lib/stores/messages';
 	import { showLoginModal } from '$lib/stores/loginModal';
-
-	const title = 'The Chat Room';
+	import { io } from 'socket.io-client';
+	import { browser } from '$app/environment';
 
 	function openModal(event?: Event) {
 		event?.preventDefault();
@@ -17,6 +17,30 @@
 	let hoveredMessageId = $state<number | null>(null);
 	let isAiResponding = $state(false);
 	let showReactionPicker = $state<number | null>(null);
+	let publicOnlineCount = $state(0);
+
+	// For logged-out users, connect to socket just to listen for online count
+	$effect(() => {
+		if (!data.user && browser) {
+			const socket = io();
+			
+			socket.on('connect', () => {
+				console.log('Public socket connected for online count');
+			});
+
+			socket.on('online-users', (users: string[]) => {
+				console.log('Received online users:', users.length);
+				publicOnlineCount = users.length;
+			});
+
+			return () => {
+				socket.disconnect();
+			};
+		}
+	});
+
+	// Derive online count - use socket store for logged in, public count for logged out
+	const onlineCount = $derived(data.user ? ($onlineUsers?.length || 0) : publicOnlineCount);
 
 	const reactionEmojis = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👏'];
 
@@ -30,28 +54,6 @@
 			{} as Record<string, string | null>
 		) || {}
 	);
-
-	function isUserOnline(username: string): boolean {
-		return $onlineUsers.includes(username);
-	}
-
-	function formatLastOnline(lastOnlineTime: Date | null): string {
-		if (!lastOnlineTime) return 'Never';
-
-		const now = new Date();
-		const last = new Date(lastOnlineTime);
-		const diffMs = now.getTime() - last.getTime();
-		const diffMins = Math.floor(diffMs / 60000);
-		const diffHours = Math.floor(diffMs / 3600000);
-		const diffDays = Math.floor(diffMs / 86400000);
-
-		if (diffMins < 1) return 'Just now';
-		if (diffMins < 60) return `${diffMins} min${diffMins === 1 ? '' : 's'} ago`;
-		if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-		if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-
-		return last.toLocaleDateString();
-	}
 
 	function formatMessageTime(timestamp: number): string {
 		const date = new Date(timestamp);
@@ -178,10 +180,10 @@
 					<span class="gradient-text">The Chat Room</span>
 				</h1>
 				<p class="hero-description">
-					Experience seamless real-time conversations with built-in AI assistance, 
-					emoji reactions, and file sharing.
+					Experience seamless real-time conversations with built-in AI assistance, emoji reactions,
+					and file sharing.
 				</p>
-				
+
 				<div class="hero-actions">
 					<button type="button" onclick={openModal} class="primary-btn">
 						<span class="btn-text">Start Chatting</span>
@@ -191,6 +193,21 @@
 						<span>Learn More</span>
 					</a>
 				</div>
+
+				<div class="stats">
+					<div class="stat">
+						<div class="stat-value">50</div>
+						<div class="stat-label">Message Limit</div>
+					</div>
+					<div class="stat">
+						<div class="stat-value">1</div>
+						<div class="stat-label">Chat Room</div>
+					</div>
+					<div class="stat">
+						<div class="stat-value">{onlineCount}</div>
+						<div class="stat-label">Users Active Now</div>
+					</div>
+				</div>
 			</div>
 
 			<div class="hero-right">
@@ -198,7 +215,7 @@
 					<img src="/chatroomhouse.png" alt="Chat Room" class="main-logo" />
 					<div class="glow-effect"></div>
 				</div>
-				
+
 				<div class="feature-pills">
 					<div class="pill pill-1">💬 Real-Time</div>
 					<div class="pill pill-2">🤖 AI Assistant</div>
@@ -219,39 +236,47 @@
 {:else if data.user && data.user.isVerified}
 	<main class="chat-main">
 		<div class="messages-container" bind:this={messagesContainer}>
-					{#if $messages.length === 0}
-						<div class="empty-state">
-							<div class="empty-icon">💬</div>
-							<p>No messages yet</p>
-							<span>Start the conversation!</span>
-						</div>
-					{:else}
-					{#each $messages as message (message.id)}
-						<div
-							class="message-wrapper"
-							class:own={message.username === data.user.username}
-							role="article"
-							data-message-id={message.id}
-							onmouseenter={() => (hoveredMessageId = message.id)}
-							onmouseleave={() => (hoveredMessageId = null)}
-						>
-							<div class="message-row">
-								<div class="avatar-col">
-									{#if userProfilePics[message.username]}
-										<img src={userProfilePics[message.username]} alt={message.username} class="msg-avatar" />
-									{:else}
-										<div class="msg-avatar-placeholder">{message.username.charAt(0).toUpperCase()}</div>
-									{/if}
-								</div>
-
-								<div class="message-content">
-									<div class="message-meta">
-										<span class="username" class:claude={message.username === 'claude'}>{message.username}</span>
-										<span class="message-id-note">ID - {message.id}</span>
-										<span class="meta-spacer"></span>
-										<span class="msg-time">{formatMessageTime(message.timestamp)}</span>
+			{#if $messages.length === 0}
+				<div class="empty-state">
+					<div class="empty-icon">💬</div>
+					<p>No messages yet</p>
+					<span>Start the conversation!</span>
+				</div>
+			{:else}
+				{#each $messages as message (message.id)}
+					<div
+						class="message-wrapper"
+						class:own={message.username === data.user.username}
+						role="article"
+						data-message-id={message.id}
+						onmouseenter={() => (hoveredMessageId = message.id)}
+						onmouseleave={() => (hoveredMessageId = null)}
+					>
+						<div class="message-row">
+							<div class="avatar-col">
+								{#if userProfilePics[message.username]}
+									<img
+										src={userProfilePics[message.username]}
+										alt={message.username}
+										class="msg-avatar"
+									/>
+								{:else}
+									<div class="msg-avatar-placeholder">
+										{message.username.charAt(0).toUpperCase()}
 									</div>
-									<div class="message-text">{message.text}</div>
+								{/if}
+							</div>
+
+							<div class="message-content">
+								<div class="message-meta">
+									<span class="username" class:claude={message.username === 'claude'}
+										>{message.username}</span
+									>
+									<span class="message-id-note">ID - {message.id}</span>
+									<span class="meta-spacer"></span>
+									<span class="msg-time">{formatMessageTime(message.timestamp)}</span>
+								</div>
+								<div class="message-text">{message.text}</div>
 
 								{#if message.reactions && message.reactions.length > 0}
 									<div class="message-reactions compact">
@@ -268,76 +293,74 @@
 										{/each}
 									</div>
 								{/if}
-								</div>
 							</div>
-
-							{#if hoveredMessageId === message.id}
-								<div class="message-actions">
-									{#if message.username !== 'claude' && message.username === data.user?.username}
-										<button
-											class="ai-respond-btn"
-											onclick={() => handleAiResponse(message.id)}
-											disabled={isAiResponding}
-											title={isAiResponding ? 'AI is responding...' : 'Ask AI to respond'}
-										>
-											🤖
-										</button>
-									{/if}
-									{#if data.user?.username === 'admin' || message.username === data.user?.username}
-										<button
-											class="delete-btn"
-											onclick={() => handleDeleteMessage(message.id)}
-											title="Delete message"
-										>
-											🗑️
-										</button>
-									{/if}
-									<button
-										class="add-reaction-btn"
-										onclick={() => (showReactionPicker = showReactionPicker === message.id ? null : message.id)}
-										title="Add reaction"
-									>
-										➕
-									</button>
-								</div>
-							{/if}
-
-							{#if showReactionPicker === message.id}
-								<div class="reaction-picker">
-									{#each reactionEmojis as emoji}
-										<button
-											class="reaction-option"
-											onclick={() => handleReaction(message.id, emoji)}
-										>
-											{emoji}
-										</button>
-									{/each}
-								</div>
-							{/if}
 						</div>
-					{/each}
-					{/if}
+
+						{#if hoveredMessageId === message.id}
+							<div class="message-actions">
+								{#if message.username !== 'claude' && message.username === data.user?.username}
+									<button
+										class="ai-respond-btn"
+										onclick={() => handleAiResponse(message.id)}
+										disabled={isAiResponding}
+										title={isAiResponding ? 'AI is responding...' : 'Ask AI to respond'}
+									>
+										🤖
+									</button>
+								{/if}
+								{#if data.user?.username === 'admin' || message.username === data.user?.username}
+									<button
+										class="delete-btn"
+										onclick={() => handleDeleteMessage(message.id)}
+										title="Delete message"
+									>
+										🗑️
+									</button>
+								{/if}
+								<button
+									class="add-reaction-btn"
+									onclick={() =>
+										(showReactionPicker = showReactionPicker === message.id ? null : message.id)}
+									title="Add reaction"
+								>
+									➕
+								</button>
+							</div>
+						{/if}
+
+						{#if showReactionPicker === message.id}
+							<div class="reaction-picker">
+								{#each reactionEmojis as emoji}
+									<button class="reaction-option" onclick={() => handleReaction(message.id, emoji)}>
+										{emoji}
+									</button>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/each}
+			{/if}
 		</div>
 
 		<div class="input-area">
-				<form
-					class="message-input-form"
-					onsubmit={(e) => {
-						e.preventDefault();
-						handleSendMessage();
-					}}
-				>
-					<input
-						type="text"
-						bind:value={messageText}
-						placeholder="Type your message..."
-						maxlength="500"
-						class="chat-input"
-					/>
-					<button type="submit" disabled={!messageText.trim()} class="send-btn">
-						<span class="btn-icon">→</span>
-					</button>
-				</form>
+			<form
+				class="message-input-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSendMessage();
+				}}
+			>
+				<input
+					type="text"
+					bind:value={messageText}
+					placeholder="Type your message..."
+					maxlength="500"
+					class="chat-input"
+				/>
+				<button type="submit" disabled={!messageText.trim()} class="send-btn">
+					<span class="btn-icon">→</span>
+				</button>
+			</form>
 		</div>
 	</main>
 {/if}
@@ -416,7 +439,7 @@
 	.hero-actions {
 		display: flex;
 		gap: 16px;
-		margin-bottom: 60px;
+		margin-bottom: 40px;
 	}
 
 	.primary-btn,
@@ -574,7 +597,8 @@
 
 	/* Animations */
 	@keyframes float {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0) rotate(0deg);
 		}
 		50% {
@@ -583,7 +607,8 @@
 	}
 
 	@keyframes float-pill {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0);
 		}
 		50% {
@@ -592,7 +617,8 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 1;
 		}
 		50% {
@@ -601,7 +627,8 @@
 	}
 
 	@keyframes pulse-glow {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 0.5;
 			transform: translate(-50%, -50%) scale(1);
 		}
@@ -612,7 +639,8 @@
 	}
 
 	@keyframes blink {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 1;
 		}
 		50% {

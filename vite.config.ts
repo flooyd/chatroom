@@ -21,6 +21,10 @@ const webSocketServer = {
 		io.on('connection', (socket) => {
 			console.log('Client connected:', socket.id);
 
+			// Immediately send current online users list to the new connection
+			const currentOnlineUsersList = Array.from(new Set(onlineUsers.values()));
+			socket.emit('online-users', currentOnlineUsersList);
+
 			socket.on('user-online', (username: string) => {
 				console.log('User online:', username);
 				onlineUsers.set(socket.id, username);

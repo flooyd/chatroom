@@ -16,14 +16,22 @@ const io = new Server(httpServer, {
 // Track online users
 const onlineUsers = new Map();
 
+// Make online count globally available
+global.onlineUsersCount = 0;
+
 io.on('connection', (socket) => {
 	console.log('Client connected:', socket.id);
+
+	// Immediately send current online users list to the new connection
+	const onlineUsersList = Array.from(new Set(onlineUsers.values()));
+	socket.emit('online-users', onlineUsersList);
 
 	socket.on('user-online', (username) => {
 		console.log('User online:', username);
 		onlineUsers.set(socket.id, username);
 		
 		const onlineUsersList = Array.from(new Set(onlineUsers.values()));
+		global.onlineUsersCount = onlineUsersList.length;
 		io.emit('online-users', onlineUsersList);
 	});
 
@@ -34,6 +42,7 @@ io.on('connection', (socket) => {
 			onlineUsers.delete(socket.id);
 			
 			const onlineUsersList = Array.from(new Set(onlineUsers.values()));
+			global.onlineUsersCount = onlineUsersList.length;
 			io.emit('online-users', onlineUsersList);
 		}
 	});
