@@ -419,12 +419,11 @@
 <style>
 	/* Landing Page */
 	.landing-page {
-		min-height: calc(100vh - 120px);
+		min-height: 100vh;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0px 20px;
-		margin-top: 20px;
+		padding: 80px 20px 40px 20px;
 		animation: fadeIn 0.8s ease-out;
 	}
 

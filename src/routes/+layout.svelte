@@ -424,7 +424,9 @@
 
 	/* Add padding to body to account for fixed nav */
 	:global(body) {
-		padding: 0px;
+		padding: 0;
+		margin: 0;
+		overflow-x: hidden;
 	}
 
 	.modal-overlay {
@@ -616,9 +618,6 @@
 	}
 
 	@media (max-width: 600px) {
-		:global(body) {
-		}
-
 		nav {
 			padding: 8px;
 		}
